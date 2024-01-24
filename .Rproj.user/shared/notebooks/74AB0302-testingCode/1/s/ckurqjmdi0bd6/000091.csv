@@ -1,0 +1,2 @@
+"0","#is_covered <- 1*(Ytest >= cf_preds$left & Ytest <= cf_preds$right)"
+"0","#table(is_covered)"

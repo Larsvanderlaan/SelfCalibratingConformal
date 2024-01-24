@@ -1,0 +1,18 @@
+
+library(SuperLearner)
+if(!require(hal9001)) {
+  devtools::install_cran("hal9001")
+}
+# specifies a nonparametric spline model generates by tensor-products of indicators of the form 1(X_j >= c) for a range of thresholds c.
+SL.hal9001_custom <- SuperLearner::create.Learner("SL.hal9001", params = list(
+  max_degree = 2, # Maximum interaction degree between spline basis functions/variables.
+  # max_degree = 1 is an additive model, that is f(x1, x2, x3) = f_1(x1) + f_2(x2) + f_3(x3) for unknownfunctions f_1, f_2, f_3
+  # max_degree = 2 is a bi-additive model, that is f(x1, x2, x3) = f_1(x1) + f_2(x2) + f_3(x3) + f_12(x1, x2) + f_23(x2, x3) + f_13(x1, x3)
+  # High interaction degrees make it much slower.
+  smoothness_orders = 0, # smoothness degree of spline basis functions. Zero-order generates indicator basis functions and allows for threshold-based jumps.
+  num_knots = 100 # For each variable, this argument specifies how many knot points (thresholds) should be used to generate basis functions.
+))
+
+
+# for interpretation, max_degree = 2, smoothness_orders = 0, num_knots = 100 specifies a regression model of the o
+

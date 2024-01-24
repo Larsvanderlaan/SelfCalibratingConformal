@@ -1,0 +1,26 @@
+{
+    "id": "D35A0B1C",
+    "path": "~/repositories/conformal/scripts/simScriptConformal.sbatch",
+    "project_path": "scripts/simScriptConformal.sbatch",
+    "type": "sh",
+    "hash": "2991518236",
+    "contents": "",
+    "dirty": false,
+    "created": 1706115875324.0,
+    "source_on_save": false,
+    "relative_order": 6,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "15,52",
+        "scrollLine": "5"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1706116441,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1706116441927,
+    "read_only": false,
+    "read_only_alternatives": []
+}

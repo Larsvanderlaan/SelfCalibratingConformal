@@ -1,0 +1,26 @@
+{
+    "id": "D68AD06C",
+    "path": "~/repositories/conformal/R/conformal.R",
+    "project_path": "R/conformal.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1705976387384.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "103,28",
+        "scrollLine": "94"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1706078033,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1706078033,
+    "read_only": false,
+    "read_only_alternatives": []
+}

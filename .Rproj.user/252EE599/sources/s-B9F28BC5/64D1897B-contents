@@ -1,0 +1,33 @@
+---
+title: "Figures"
+output: html_document
+date: '2023-12-30'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r}
+n <- 200
+X <- runif(n, 0, 1)
+Y <- rnorm(n, X, 0.1)
+tau <- X - 1
+alpha <- 0.05
+
+scores <- abs(tau - Y)
+rho <- quantile(scores, (1-alpha)*(1 + 1/n))
+PI <- rho
+
+plot(tau,Y)
+PI
+
+tau_debias <- tau + mean(Y - tau)
+scores_debias <- abs(tau_debias - Y)
+rho_debias <- quantile(scores_debias, (1-alpha)*(1 + 1/n))
+PI_debias <- rho_debias
+PI_debias
+```

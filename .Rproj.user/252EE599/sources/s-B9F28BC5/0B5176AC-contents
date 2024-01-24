@@ -1,0 +1,100 @@
+
+
+iso_calibrator <- function(f, Y, iso_max_depth = 10, iso_min_child_weight = 10) {
+  isoreg_with_xgboost(f, Y, iso_max_depth = iso_max_depth, iso_min_child_weight = iso_min_child_weight)
+}
+#' @param f_train Predictions on training set.
+#' @param Y_train Outcome labels for training set.
+#' @param f_test Predictions on validation set.
+#' @param alpha Coverage probability for prediction regions.
+#' @param iso_max_depth Maximum tree depth for isotonic regression. Used internally for calibration.
+#' @param iso_min_child_weight Minimum number of observation in each tree node of isotonic regression tree. Used internally for calibration.
+#' @param num_bins_Y Number of bins for discretization of outcomes to generate approximate prediction regions.
+conformal_isocal <- function(f_train, Y_train, f_test, calibrator = iso_calibrator, alpha = 0.95, num_bins_Y = min(100, length(unique(Y_train))), ...) {
+  library(data.table)
+
+  f_test_uniq <- sort(unique(f_test)) # store unique labels of test predictions. Why?
+  # discretize outcome
+  labels_Y <- quantile(Y_train, seq(0, 1, length = num_bins_Y + 1), type = 1)
+
+  # iterate for test points for which to predict outcomes
+  labels_f <- quantile(f_test, seq(0, 1, length = num_bins_Y + 1), type = 1)
+
+  output_data <- rbindlist(lapply(labels_f, function(f_uncal) {
+    # construct augmented training data
+    f_augment <- c(f_train, f_uncal)
+    out <- rbindlist(lapply(labels_Y, function(label_Y) {
+      Y_augment <- c(Y, label_Y)
+      # Venn-Abers isotonic calibration
+      calibrator_VA <- calibrator(f_augment, Y_augment, ...)
+      # get calibrated prediction for test point and augmented dataset
+      f_cal <- calibrator_VA(f_uncal)
+      f_augment_cal <- calibrator_VA(f_augment)
+      # compute conformity scores for level set
+      conformity_scores_level_set <- abs(Y_augment[f_augment_cal == f_cal] - f_cal)
+      radius_alpha <- quantile(conformity_scores_level_set, alpha, type = 1)
+      data.table(label_Y = label_Y, f_cal = f_cal,
+                 radius_alpha = radius_alpha,
+                 in_region = 1*(abs(label_Y - f_cal) <= radius_alpha))
+    }))
+    # add uncalibrated prediction
+    out$f_test <- f_uncal
+    # get
+    # add indicator function encoding prediction region
+    return(out)
+  }))
+
+
+
+  prediction_point <- function(f, return_median = TRUE) {
+    f_nearest <- output_data$f_test[which.min(abs(f - output_data$f_test))]
+    data <- output_data[output_data$f_test == f_nearest]
+    f_cal <- unique(sort(data$f_cal))
+    if(return_median) {
+      f_cal <- median(f_cal)
+    }
+    return(f_cal)
+  }
+  prediction_point <- Vectorize(prediction_point)
+
+  interval_data <- output_data[ , .(left = min(label_Y[in_region==1]), right = max(label_Y[in_region==1])), by = f_test]
+  interval_data$f_cal <- prediction_point(interval_data$f_test, return_median = TRUE)
+
+  prediction_region <- function(f){
+    f_labels <- sort(unique(output_data$f_test))
+    f_nearest <- f_labels[findInterval(f, f_labels, all.inside = TRUE)]
+    new_data <- interval_data[match(f_nearest, interval_data$f_test), ]
+    new_data$f_test <- f
+    return(interval_data[match(f_nearest, interval_data$f_test), ])
+
+
+    # # subset to calibration data for test prediction f (or nearest one if not present in f_test)
+    # data <- output_data[which.min(abs(f - output_data$f_test))]
+    # fun <- function(y) {
+    #   y_discrete <- labels_Y[findInterval(y, labels_Y, all.inside = TRUE)]
+    #   y_discrete_uniq <- unique(y_discrete)
+    #   in_region_uniq <- sapply(y_discrete_uniq, function(y_test) {
+    #     data_sub <- data[data$label == y_test]
+    #     return(as.numeric(abs(y_test - data_sub$f_cal) <= data_sub$radius_alpha))
+    #   })
+    #   return(range(y_discrete_uniq[in_region_uniq==1]))
+    #          #in_region <- in_region_uniq[match(y_test, y_discrete_uniq)]
+    #          #return(in_region)
+
+  }
+
+  #prediction_region <- Vectorize(prediction_region)
+
+  output <- list(prediction_point = prediction_point, prediction_region = prediction_region, output_data = output_data, interval_data = interval_data)
+
+  return(output)
+}
+
+conformal_predict <- function(output, f) {
+  interval_data <- output$prediction_region(f)[, c("f_test", "f_cal", "left", "right")]
+  return(interval_data)
+}
+
+
+
+

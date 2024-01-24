@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#SBATCH --array=1
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --output=Rout/par-%J.out
+#SBATCH --error=Rout/par-%J.err
+#SBATCH --time=14-00:00:00
+echo "LOADING R"
+module load R
+module load Python
+echo "R LOADED"
+Rscript -e '
+dir_path = "~";
+source(paste0(dir_path, "/conformal/scripts/R_setup.R"));
+source(paste0(dir_path, "/conformal/scripts/run_sims.R"));
+
+if(lrnr_name == "gam") {
+  lrnr <- lrnr_gam
+} else if(lrnr_name == "xg") {
+  lrnr <- lrnr_xg
+} else if(lrnr_name == "ref") {
+  lrnr <- Lrnr_ranger$new()
+}
+d <- as.numeric(d)
+shape <- as.numeric(shape)
+
+n_train <- 1000
+alpha <- 0.05
+out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape)
+fwrite(out, file = paste0("sims_", n_train, "_", lrnr$name, "_", d, "_", alpha, "_", shape, ".csv"))
+'

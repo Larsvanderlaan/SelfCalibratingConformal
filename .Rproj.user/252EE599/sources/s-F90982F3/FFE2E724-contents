@@ -1,0 +1,21 @@
+---
+title: "Untitled"
+output: html_document
+date: '2024-01-24'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+
+```{r}
+results_1 <- fread("sims_1000_Lrnr_gam_NULL_NULL_GCV.Cp_2_0.05_1.csv")
+
+results_1
+
+```

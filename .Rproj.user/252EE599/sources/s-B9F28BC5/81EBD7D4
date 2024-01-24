@@ -1,0 +1,26 @@
+{
+    "id": "81EBD7D4",
+    "path": "~/repositories/conformal/scripts/run_sims.R",
+    "project_path": "scripts/run_sims.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1706115079973.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "156,0",
+        "scrollLine": "152"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1706116232,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1706116232367,
+    "read_only": false,
+    "read_only_alternatives": []
+}

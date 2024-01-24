@@ -1,0 +1,244 @@
+---
+title: "SimPlotsPaper"
+output: html_document
+date: '2022-06-05'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+ns <- c(100,150, 250, 500,750, 1000,2500)
+library(latex2exp)
+# summary info for covariate coef
+data_cov <- data.frame()
+for(n in ns) {
+  load(paste0("ORMissingSim2_n=",n))
+  bias <- mean((unlist(sapply(covariate_output_list, function(item){item[[1]]})) - 0.5 ))
+  se <- sd((unlist(sapply(covariate_output_list, function(item){item[[1]]}) )- 0.5 ))
+  coverage <- mean(unlist(sapply(covariate_output_list, function(item){item[3] <= 0.5 & item[4] >= 0.5})), na.rm = T)
+  
+  bias_wrong <- mean((unlist(sapply(covariate_output_wrong_list, function(item){item[1]})) - 0.5 ))
+  se_wrong <- sd((unlist(sapply(covariate_output_wrong_list, function(item){item[1]})) - 0.5 ))
+  coverage_wrong <- mean(unlist(sapply(covariate_output_wrong_list, function(item){item[3] <= 0.5 & item[4] >= 0.5})), na.rm = T)
+  
+   
+  c(mean(unlist(sapply(covariate_output_wrong_list, function(item){item[3]})), na.rm = T),
+    mean(unlist(sapply(covariate_output_wrong_list, function(item){item[4]})), na.rm = T))
+  
+  bias_glmQ <- mean((unlist(sapply(glmQ_info_list, function(item){item[2,1]})) - 0.5 ))
+  se_glmQ <- sd((unlist(sapply(glmQ_info_list, function(item){item[2,1]})) - 0.5 ))
+  coverage_glmQ <- mean(unlist(sapply(glmQ_info_list, function(item){item[2,2] <= 0.5 & item[2,3] >= 0.5})), na.rm = T)
+  
+  bias_glmQbar <- mean((unlist(sapply(glmQbar_info_list, function(item){item[2,1]})) - 0.5 ))
+  se_glmQbar <- sd((unlist(sapply(glmQbar_info_list, function(item){item[2,1]})) - 0.5 ))
+  coverage_glmQbar <- mean(unlist(sapply(glmQbar_info_list, function(item){item[2,2] <= 0.5 & item[2,3] >= 0.5})), na.rm = T)
+  
+  
+data_cov <- rbind(data_cov, data.frame(n = n, bias = c(bias,bias_wrong, bias_glmQ, bias_glmQbar ),
+           se = c(se, se_wrong, se_glmQ, se_glmQbar),
+           coverage = c(coverage, coverage_wrong, coverage_glmQ, coverage_glmQbar),
+           method = c("spORMissing", "spOR", "glmBaseline", "glmPostTreatment")))
+}
+
+
+#method = c(TeX("TMLE ($\\beta_{adj}$)"), TeX("TMLE ($\\beta$)"),  TeX("glm ($\\beta$)"), TeX("glmNaive ($\\beta_{adj}$)")))
+### Summary info for intercept coef
+data_inter <- data.frame()
+for(n in ns) {
+  load(paste0("ORMissingSim2_n=",n))
+  bias <- mean((unlist(sapply(intercept_output_list, function(item){item[1]})) - 0.5 ))
+  mse <- sd((unlist(sapply(intercept_output_list, function(item){item[1]})) - 0.5 ))
+  coverage <- mean(unlist(sapply(intercept_output_list, function(item){item[3] <= 0.5 & item[4] >= 0.5})), na.rm = T)
+  
+  bias_wrong <- mean((unlist(sapply(intercept_output_wrong_list, function(item){item[1]})) - 0.5 ))
+  mse_wrong <- sd((unlist(sapply(intercept_output_wrong_list, function(item){item[1]}) )- 0.5 ))
+  coverage_wrong <- mean(unlist(sapply(intercept_output_wrong_list, function(item){item[3] <= 0.5 & item[4] >= 0.5})), na.rm = T)
+  
+  bias_glmQ <- mean((unlist(sapply(glmQ_info_list, function(item){item[1,1]}) )- 0.5 ))
+  mse_glmQ <- sd((unlist(sapply(glmQ_info_list, function(item){item[1,1]})) - 0.5 ))
+  coverage_glmQ <- mean(unlist(sapply(glmQ_info_list, function(item){item[1,2] <= 0.5 & item[1,3] >= 0.5})), na.rm = T)
+  
+  bias_glmQbar <- mean((unlist(sapply(glmQbar_info_list, function(item){item[1,1]})) - 0.5 ))
+  mse_glmQbar <- sd((unlist(sapply(glmQbar_info_list, function(item){item[1,1]})) - 0.5 ))
+  coverage_glmQbar <- mean(unlist(sapply(glmQbar_info_list, function(item){item[1,2] <= 0.5 & item[1,3] >= 0.5})), na.rm = T)
+  
+  
+data_inter <- rbind(data_inter, data.frame(n = n, bias = c(bias,bias_wrong, bias_glmQ, bias_glmQbar ),
+           se = c(mse, mse_wrong, mse_glmQ, mse_glmQbar),
+           coverage = c(coverage, coverage_wrong, coverage_glmQ, coverage_glmQbar),
+           method = c("spORMissing", "spOR", "glmBaseline", "glmPostTreatment")))
+}
+
+```
+
+
+```{r}
+height = 3
+width = 3
+data_inter[data_inter$method == "glmPostTreatment" & data_inter$n %in% c(100, 150), c(2,3,4)] <- NA 
+
+data_cov[data_cov$method == "glmPostTreatment" & data_cov$n %in% c(100, 150), c(2,3,4)] <- NA 
+
+data_inter[data_inter$method == "glmBaseline" & data_inter$n %in% c(100, 150), c(2,3,4)] <- NA 
+
+data_cov[data_cov$method == "glmBaseline" & data_cov$n %in% c(100, 150), c(2,3,4)] <- NA 
+
+data_inter[,c(2,3,4)] <- round(data_inter[,c(2,3,4)], 3)
+data_cov[,c(2,3,4)] <- round(data_cov[,c(2,3,4)], 3)
+
+ 
+ data_inter$bias <- abs(data_inter$bias)
+  data_inter$rmse <- sqrt(data_inter$bias^2 + data_inter$se^2)
+
+ data_cov$bias <- abs(data_cov$bias)
+ data_cov$rmse <- sqrt(data_cov$bias^2 + data_cov$se^2)
+data_inter
+data_cov
+library(ggplot2)
+
+data_cov[data_cov$method == "glmPostTreatment", "method"] <- "glmMissing"
+data_cov[data_cov$method == "glmBaseline","method"] <- "glm"
+data_cov[data_cov$method == "spOR","method"] <- "spTMLE"
+data_cov[data_cov$method == "spORMissing","method"] <- "spTMLEMissing"
+data_cov[data_cov$method == "glmPostTreatment","method"] <- "glmMissing"
+data_cov[data_cov$method == "glmBaseline","method"] <- "glm"
+data_cov[data_cov$method == "spOR","method"] <- "spTMLE"
+data_cov[data_cov$method == "spORMissing","method"] <- "spTMLEMissing"
+
+data_inter[data_inter$method == "glmPostTreatment", "method"] <- "glmMissing"
+data_inter[data_inter$method == "glmBaseline","method"] <- "glm"
+data_inter[data_inter$method == "spOR","method"] <- "spTMLE"
+data_inter[data_inter$method == "spORMissing","method"] <- "spTMLEMissing"
+data_inter[data_inter$method == "glmPostTreatment","method"] <- "glmMissing"
+data_inter[data_inter$method == "glmBaseline","method"] <- "glm"
+data_inter[data_inter$method == "spOR","method"] <- "spTMLE"
+data_inter[data_inter$method == "spORMissing","method"] <- "spTMLEMissing"
+
+labs <-   c(TeX("TMLE ($\\beta_{0, adj}$)"), TeX("TMLE ($\\beta_0$)"),  TeX("glm ($\\beta_0$)"), TeX("glmNaive ($\\beta_{0, adj}$)"))
+tmp <- labs
+names <- c("spORMissing", "spOR", "glmBaseline", "glmPostTreatment")
+vals <- c("#F8766D","#00BA38","#619CFF", "purple")
+vals <- vals[order(names)]
+labs <- labs[order(names)]
+linetypevals = c("solid", "dashed", "dotdash", "dot")
+linetypevals <- linetypevals[order(names)]
+linetypevals <- c(4, 3, 2, 1)
+#names(vals) <- names(labs)
+
+
+# get legend
+p <- ggplot(data_inter, aes(x = n, y= bias, color = method, linetype = method)) + geom_line()+ scale_y_continuous(limits = range(data_inter[data_inter$method == "glmMissing","bias"]))
+p <- p + labs(x= "Sample Size (n)", y = "Bias", color = "Method", linetype = "Method") + theme_bw()+ theme(legend.title = element_text( size=8), legend.text=element_text(size=6), legend.direction="horizontal") + scale_color_manual( 
+                       labels= labs,
+                       values = vals) + scale_linetype_manual(labels=labs, values =  linetypevals)
+
+ p
+ 
+     ggsave("plot_intercept_legend.pdf", width = 6, height = height)
+
+p <- ggplot(data_inter, aes(x = n, y= bias, color = method, linetype = method)) + geom_line()+ scale_y_continuous(limits = range(data_inter[data_inter$method == "glmMissing","bias"]))
+p <- p + labs(x= "Sample Size (n)", y = "Bias", color = "Method", linetype = "Method") + theme_bw()+ theme(legend.title = element_text( size=8), legend.text=element_text(size=6), legend.direction="vertical") + scale_color_manual( 
+                       labels= labs,
+                       values = vals)  + scale_linetype_manual(labels=labs, values =  linetypevals)  +guides(linetype="none")   +guides(color="none") 
+  
+                       
+  
+ 
+    ggsave("plot_intercept_bias.pdf", width = width, height = height)
+
+
+ p<- ggplot(data_inter, aes(x = n, y= se, color = method, linetype = method)) + geom_line() + scale_y_continuous(limits = range(data_inter[data_inter$method == "glmMissing","se"]))
+ p <- p + labs(x= "Sample Size (n)", y = "Standard Error (se)", color = "Method", linetype = "Method") + theme_bw() + theme(legend.title = element_text( size=8), legend.text=element_text(size=6))   + scale_color_manual( 
+                       labels= labs,
+                       values = vals) + scale_linetype_manual(labels=labs, values =  linetypevals)  +guides(linetype="none")   +guides(color="none") 
+  
+ 
+    ggsave("plot_intercept_se.pdf", width = width, height = height)
+
+    
+    
+    
+  p<-  ggplot(data_inter, aes(x = n, y= rmse, color = method, linetype = method)) + geom_line() + scale_y_continuous(limits = range(data_inter[data_inter$method == "glmMissing","rmse"]))
+  p <- p + labs(x= "Sample Size (n)", y = "Root-Mean-Squared-Error (rmse)", color = "Method", linetype = "Method") + theme_bw()+ theme(legend.title = element_text( size=8), legend.text=element_text(size=6))  + scale_color_manual( 
+                       labels= labs,
+                       values = vals) + scale_linetype_manual(labels=labs, values =  linetypevals) +guides(linetype="none")   +guides(color="none") 
+  
+   ggsave("plot_intercept_rmse.pdf", width = width, height = height)
+  
+
+  
+  p<- ggplot(data_inter, aes(x = n, y= coverage, color = method, linetype = method)) + geom_line() + scale_y_continuous(limits = c(min(data_inter[data_inter$method == "glmMissing","coverage"]), 0.96), breaks = c(0.7, 0.75, 0.8, 0.85, 0.9, 0.91, 0.92, 0.93, 0.94, 0.95, 0.96)) 
+  p <- p + labs(x= "Sample Size (n)", y = "95% CI Coverage", color = "Method", linetype = "Method") + theme_bw()+ theme(legend.title = element_text( size=8), legend.text=element_text(size=6)) + scale_color_manual( 
+                       labels= labs,
+                       values = vals) + scale_linetype_manual(labels=labs, values =  linetypevals) +guides(linetype="none")   +guides(color="none") 
+  
+  
+ ggsave("plot_intercept_coverage.pdf", width = width, height = height)
+ 
+ 
+ 
+ 
+ labs <-   c(TeX("TMLE ($\\beta_{1, adj}$)"), TeX("TMLE ($\\beta_1$)"),  TeX("glm ($\\beta_1$)"), TeX("glmNaive ($\\beta_{1, adj}$)"))
+tmp <- labs
+names <- c("spORMissing", "spOR", "glmBaseline", "glmPostTreatment")
+vals <- c("#F8766D","#00BA38","#619CFF", "purple")
+vals <- vals[order(names)]
+labs <- labs[order(names)]
+
+
+p <-  ggplot(data_cov, aes(x = n, y= bias, color = method, linetype = method)) + geom_line() + scale_y_continuous(limits = range(data_cov[data_cov$method == "glmMissing","bias"]))
+ p <- p + labs(x= "Sample Size (n)", y = "Bias", color = "Method", linetype = "Method") + theme_bw()+ theme(legend.title = element_text( size=8), legend.text=element_text(size=6), legend.direction = "horizontal") + scale_color_manual( 
+                       labels= labs,
+                       values = vals) + scale_linetype_manual(labels=labs, values =  linetypevals) +  scale_linetype_manual(labels=labs, values =  linetypevals)
+
+ p
+ 
+     ggsave("plot_covariate_legend.pdf", width = 6, height = height)
+     
+     
+
+
+ p<- ggplot(data_cov, aes(x = n, y= bias, color = method, linetype = method)) + geom_line() + scale_y_continuous(limits = range(data_cov[data_cov$method == "glmMissing","bias"]))
+ p <- p + labs(x= "Sample Size (n)", y = "Bias", color = "Method", linetype = "Method") + theme_bw()+ theme(legend.title = element_text( size=8), legend.text=element_text(size=6)) + scale_color_manual( 
+                       labels= labs,
+                       values = vals) + scale_linetype_manual(labels=labs, values =  linetypevals)  +guides(linetype="none")   +guides(color="none") 
+  
+ 
+ggsave("plot_covariate_bias.pdf", width = width, height = height)
+
+ p<- ggplot(data_cov, aes(x = n, y= se, color = method, linetype = method)) + geom_line()  + scale_y_continuous(limits = range(data_cov[data_cov$method == "glmMissing","se"]))
+ p <- p + labs(x= "Sample Size (n)", y = "Standard Error (se)", color = "Method", linetype = "Method") + theme_bw()+ theme(legend.title = element_text( size=8), legend.text=element_text(size=6))+ scale_color_manual( 
+                       labels= labs,
+                       values = vals) + scale_linetype_manual(labels=labs, values =  linetypevals)  +guides(linetype="none")   +guides(color="none") 
+  
+ 
+
+ggsave("plot_covariate_se.pdf", width = width, height = height)
+
+ p<- ggplot(data_cov, aes(x = n, y= rmse, color = method, linetype = method)) + geom_line()  + scale_y_continuous(limits = range(data_cov[data_cov$method == "glmMissing","rmse"]))
+ p <- p + labs(x= "Sample Size (n)", y = "Root-Mean-Squared-Error (rmse)", color = "Method", linetype = "Method") + theme_bw()+ theme(legend.title = element_text( size=8), legend.text=element_text(size=6))+ scale_color_manual( 
+                       labels= labs,
+                       values = vals) + scale_linetype_manual(labels=labs, values =  linetypevals)  +guides(linetype="none")   +guides(color="none") 
+ 
+ 
+ggsave("plot_covariate_rmse.pdf", width = width, height = height)  
+  
+
+
+ p<- ggplot(data_cov, aes(x = n, y= coverage, color = method, linetype = method)) + geom_line() + scale_y_continuous(limits = c(min(data_cov[data_cov$method == "glmMissing","coverage"]), 0.96), breaks = c(0.7, 0.75, 0.8, 0.85, 0.9, 0.91, 0.92, 0.93, 0.94, 0.95))
+ p <- p + labs(x= "Sample Size (n)", y = "95% CI Coverage", color = "Method", linetype = "Method") + theme_bw()+ theme(legend.title = element_text( size=8), legend.text=element_text(size=6))+ scale_color_manual( 
+                       labels= labs,
+                       values = vals)  + scale_linetype_manual(labels=labs, values =  linetypevals) +guides(linetype="none")   +guides(color="none") 
+  
+
+ggsave("plot_covariate_coverage.pdf", width = width, height = height)
+ 
+
+
+
+```
+
+
