@@ -153,36 +153,36 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train) {
 }
 
 
-
-if(lrnr_name == "gam") {
-  lrnr <- lrnr_gam
-} else if(lrnr_name == "xg") {
-  lrnr <- lrnr_xg
-} else if(lrnr_name == "ref") {
-  lrnr <- Lrnr_ranger$new()
-}
-d <- as.numeric(d)
-shape <- as.numeric(shape)
-
-n_train <- 1000
-alpha <- 0.05
-out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape)
-fwrite(out, file = paste0("sims_", n_train, "_", lrnr$name, "_", d, "_", alpha, "_", shape, ".csv"))
-
-
-
-d_list <- c(1, 2, 5, 10)
-lrnr_list <- list(lrnr_gam, lrnr_xg, Lrnr_ranger$new())
-shape_list <- c(1, 2 , 3 ,4)
-out_list <- list()
-for(d in d_list) {
-  for(lrnr in lrnr_list) {
-    for(shape in shape_list) {
-      n_train <- 1000
-      alpha <- 0.05
-      out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape, n_test = 10)
-      fwrite(out, file = paste0("sims_", n_train, "_", lrnr$name, "_", d, "_", alpha, "_", shape, ".csv"))
-      out_list <- c(out_list, list(out))
-    }
-  }
-}
+#
+# if(lrnr_name == "gam") {
+#   lrnr <- lrnr_gam
+# } else if(lrnr_name == "xg") {
+#   lrnr <- lrnr_xg
+# } else if(lrnr_name == "ref") {
+#   lrnr <- Lrnr_ranger$new()
+# }
+# d <- as.numeric(d)
+# shape <- as.numeric(shape)
+#
+# n_train <- 1000
+# alpha <- 0.05
+# out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape)
+# fwrite(out, file = paste0("sims_", n_train, "_", lrnr$name, "_", d, "_", alpha, "_", shape, ".csv"))
+#
+#
+#
+# d_list <- c(1, 2, 5, 10)
+# lrnr_list <- list(lrnr_gam, lrnr_xg, Lrnr_ranger$new())
+# shape_list <- c(1, 2 , 3 ,4)
+# out_list <- list()
+# for(d in d_list) {
+#   for(lrnr in lrnr_list) {
+#     for(shape in shape_list) {
+#       n_train <- 1000
+#       alpha <- 0.05
+#       out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape, n_test = 10)
+#       fwrite(out, file = paste0("sims_", n_train, "_", lrnr$name, "_", d, "_", alpha, "_", shape, ".csv"))
+#       out_list <- c(out_list, list(out))
+#     }
+#   }
+# }
