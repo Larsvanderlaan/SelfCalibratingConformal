@@ -57,7 +57,7 @@ conformal_calibrator <- function(f_train, Y_train, f_test = f_train, calibrator 
     out <- rbindlist(lapply(grid_Y, function(label_Y) {
       Y_augment <- c(Y_train, label_Y)
       # Venn-Abers isotonic calibration
-      calibrator_VA <- calibrator(f_augment, Y_augment)
+      calibrator_VA <- calibrator(f_augment, Y_augment, ...)
       # get calibrated prediction for test point and augmented dataset
       f_cal <- calibrator_VA(f_uncal)
       f_augment_cal <- calibrator_VA(f_augment)

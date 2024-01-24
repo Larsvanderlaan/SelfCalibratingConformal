@@ -8,7 +8,7 @@ library(conformalInference)
 library(data.table)
 
 dir_path <- "~/repositories"
-dir_path <- "~"
+#dir_path <- "~"
 source(paste0(dir_path, "/conformal/scripts/sim_helpers.R"))
 
 
@@ -150,6 +150,9 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train) {
 
   return(results)
 }
+
+
+
 
 
 #
