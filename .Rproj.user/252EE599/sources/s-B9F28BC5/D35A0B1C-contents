@@ -14,6 +14,13 @@ Rscript -e '
 dir_path = "~";
 source(paste0(dir_path, "/conformal/scripts/R_setup.R"));
 source(paste0(dir_path, "/conformal/scripts/run_sims.R"));
+lrnr_name <- Sys.getenv("lrnr_name")
+d <- Sys.getenv("d")
+shape <- Sys.getenv("shape")
+
+lrnr_name <- as.character(lrnr_name)
+d <- as.numeric(d)
+shape <- as.numeric(shape)
 
 if(lrnr_name == "gam") {
   lrnr <- lrnr_gam
@@ -22,8 +29,6 @@ if(lrnr_name == "gam") {
 } else if(lrnr_name == "ref") {
   lrnr <- Lrnr_ranger$new()
 }
-d <- as.numeric(d)
-shape <- as.numeric(shape)
 
 n_train <- 1000
 alpha <- 0.05

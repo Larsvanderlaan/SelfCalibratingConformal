@@ -3,7 +3,7 @@
     "path": "~/repositories/conformal/scripts/run_sims.R",
     "project_path": "scripts/run_sims.R",
     "type": "r_source",
-    "hash": "2155198283",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1706053989423.0,
@@ -12,8 +12,8 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "10,0",
-        "scrollLine": "0"
+        "cursorPosition": "184,7",
+        "scrollLine": "165"
     },
     "folds": "",
     "lastKnownWriteTime": 1706118464,
