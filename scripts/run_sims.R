@@ -8,7 +8,7 @@ library(conformalInference)
 library(data.table)
 
 dir_path <- "~/repositories"
-dir_path <- "~"
+#dir_path <- "~"
 source(paste0(dir_path, "/conformal/scripts/sim_helpers.R"))
 
 
@@ -54,7 +54,6 @@ compute_calibration_error <- function(f, Y) {
   calibration_error <- sqrt(max(mean((f_cal - f)*(Y - f)), 0))
   return(calibration_error)
 }
-
 
 run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train) {
 #Lrnr_xgboost$new(max_depth = max_depth)

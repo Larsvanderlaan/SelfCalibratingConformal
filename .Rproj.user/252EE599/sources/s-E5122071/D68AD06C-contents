@@ -1,11 +1,12 @@
 
 
+#' @export
 iso_calibrator <- function(f, Y, max_depth = 12, min_child_weight = 20) {
   isoreg_with_xgboost(f, Y, max_depth = max_depth, min_child_weight = min_child_weight)
 }
 
 
-
+#' @export
 binning_calibrator <- function(f, Y, nbin = 10) {
   num_bins <- nbin
 
@@ -30,6 +31,8 @@ binning_calibrator <- function(f, Y, nbin = 10) {
 #' @param iso_max_depth Maximum tree depth for isotonic regression. Used internally for calibration.
 #' @param iso_min_child_weight Minimum number of observation in each tree node of isotonic regression tree. Used internally for calibration.
 #' @param num_bins_Y Number of bins for discretization of outcomes to generate approximate prediction regions.
+#' @import data.table
+#' @export
 conformal_calibrator <- function(f_train, Y_train, f_test = f_train, calibrator = iso_calibrator, alpha = 0.1, num_bins_Y = 500, num_bins_f = num_bins_Y, ...) {
   library(data.table)
 
@@ -116,8 +119,7 @@ conformal_calibrator <- function(f_train, Y_train, f_test = f_train, calibrator 
   }
   prediction_point <- Vectorize(prediction_point)
 
-  quantile(as.vector(abs(Y_train - prediction_point(f_train))))
-  quantile(as.vector(abs(f_train - Y_train)) )
+
 
 
   interval_data <- output_data[ , .(lower = min(lower), upper = max(upper)), by = f_test]
@@ -142,6 +144,7 @@ conformal_calibrator <- function(f_train, Y_train, f_test = f_train, calibrator 
   return(output)
 }
 
+#' @export
 conformal_predict <- function(output, f) {
   interval_data <- output$prediction_region(f)[, c("f_test", "f_cal", "lower", "upper")]
   return(interval_data)

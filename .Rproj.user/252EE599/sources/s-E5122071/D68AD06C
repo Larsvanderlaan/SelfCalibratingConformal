@@ -3,7 +3,7 @@
     "path": "~/repositories/conformal/R/conformal.R",
     "project_path": "R/conformal.R",
     "type": "r_source",
-    "hash": "0",
+    "hash": "4147898460",
     "contents": "",
     "dirty": false,
     "created": 1705976387384.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "103,28",
-        "scrollLine": "94"
+        "cursorPosition": "33,0",
+        "scrollLine": "19"
     },
     "folds": "",
-    "lastKnownWriteTime": 1706078033,
+    "lastKnownWriteTime": 1706118333,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1706078033,
+    "last_content_update": 1706118333488,
     "read_only": false,
     "read_only_alternatives": []
 }
