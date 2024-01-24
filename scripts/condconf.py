@@ -1,6 +1,5 @@
 import cvxpy as cp
 import numpy as np
-from tqdm import tqdm
 from functools import partial, lru_cache
 from scipy.optimize import linprog
 from sklearn.metrics.pairwise import pairwise_kernels
@@ -49,7 +48,8 @@ def run_fun(x_calib : np.ndarray,
                
 
               i = 0
-              for x_t in tqdm(x_test):
+              for x_t in x_test:
+                print(i)
                 x_t = x_t.reshape(1, -1)
                 try: 
                   res = cond_conf.predict(1 - alpha, x_t, score_inv_fn, exact=False, randomize=True)
