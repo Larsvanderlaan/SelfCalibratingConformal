@@ -28,7 +28,7 @@ if(lrnr_name == "gam") {
   lrnr <- lrnr_gam
 } else if(lrnr_name == "xg") {
   lrnr <- lrnr_xg
-} else if(lrnr_name == "ref") {
+} else if(lrnr_name == "rf") {
   lrnr <- Lrnr_ranger$new()
 }
 
