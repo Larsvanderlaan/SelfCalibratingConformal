@@ -28,5 +28,5 @@ shape <- as.numeric(shape)
 n_train <- 1000
 alpha <- 0.05
 out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape)
-fwrite(out, file = paste0("sims_", n_train, "_", lrnr$name, "_", d, "_", alpha, "_", shape, ".csv"))
+fwrite(out, file = paste0("sims_", n_train, "_", lrnr_name, "_", d, "_", alpha, "_", shape, ".csv"))
 '
