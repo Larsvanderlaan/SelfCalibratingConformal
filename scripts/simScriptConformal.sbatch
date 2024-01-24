@@ -34,8 +34,8 @@ if(lrnr_name == "gam") {
   lrnr <- Lrnr_ranger$new()
 }
 
-n_train <- 1000
+n_train <- 100
 alpha <- 0.05
-out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape, cond_var_type = cond_var_type)
-fwrite(out, file = paste0("sims_", n_train, "_", lrnr_name, "_", d, "_", alpha, "_", shape, ".csv"))
+out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape, n_test = 5, cond_var_type = cond_var_type)
+fwrite(out, file = paste0("~/conformal/results/sims_", n_train, "_", lrnr_name, "_", d, "_", alpha, "_", shape, ".csv"))
 '
