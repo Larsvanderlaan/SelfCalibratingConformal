@@ -8,7 +8,7 @@
 #SBATCH --time=14-00:00:00
 echo "LOADING R"
 module load R
-module load Python
+module load Python/3.8.2-GCCcore-9.3.0
 echo "R LOADED"
 Rscript -e '
 dir_path = "~";
