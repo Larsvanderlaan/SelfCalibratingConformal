@@ -1,0 +1,27 @@
+{
+    "id": "298EB332",
+    "path": "~/repositories/conformal/R/install_packages.R",
+    "project_path": "R/install_packages.R",
+    "type": "r_source",
+    "hash": "853267076",
+    "contents": "",
+    "dirty": false,
+    "created": 1706117300716.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "3,34",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1706117341,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1706117341195,
+    "read_only": false,
+    "read_only_alternatives": []
+}
