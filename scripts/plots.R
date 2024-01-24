@@ -1,5 +1,7 @@
 
-
+###########
+# plots of RCDF of conformity scores
+###########
 
 set.seed(12345)
 d <- 5
