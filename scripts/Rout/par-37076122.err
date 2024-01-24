@@ -1,0 +1,18 @@
+
+The following have been reloaded with a version change:
+  1) GCCcore/12.2.0 => GCCcore/9.3.0
+  2) SQLite/3.39.4-GCCcore-12.2.0 => SQLite/3.31.1-GCCcore-9.3.0
+  3) Tcl/8.6.12-GCCcore-12.2.0 => Tcl/8.6.10-GCCcore-9.3.0
+  4) XZ/5.2.7-GCCcore-12.2.0 => XZ/5.2.5-GCCcore-9.3.0
+  5) binutils/2.39-GCCcore-12.2.0 => binutils/2.34-GCCcore-9.3.0
+  6) bzip2/1.0.8-GCCcore-12.2.0 => bzip2/1.0.8-GCCcore-9.3.0
+  7) libffi/3.4.4-GCCcore-12.2.0 => libffi/3.3-GCCcore-9.3.0
+  8) libreadline/8.2-GCCcore-12.2.0 => libreadline/8.0-GCCcore-9.3.0
+  9) ncurses/6.3-GCCcore-12.2.0 => ncurses/6.2-GCCcore-9.3.0
+ 10) zlib/1.2.12-GCCcore-12.2.0 => zlib/1.2.11-GCCcore-9.3.0
+
+Registered S3 methods overwritten by 'lava':
+  method    from              
+  plot.sim  conformalInference
+  print.sim conformalInference
+  0%|          | 0/1000 [00:00<?, ?it/s]  0%|          | 1/1000 [00:08<2:13:53,  8.04s/it]  0%|          | 2/1000 [00:16<2:20:14,  8.43s/it]  0%|          | 3/1000 [00:25<2:20:08,  8.43s/it]  0%|          | 4/1000 [00:32<2:15:30,  8.16s/it]  0%|          | 5/1000 [00:41<2:19:57,  8.44s/it]  1%|          | 6/1000 [00:48<2:07:54,  7.72s/it]  1%|          | 7/1000 [00:58<2:19:28,  8.43s/it]  1%|          | 8/1000 [01:06<2:18:33,  8.38s/it]slurmstepd-gizmoj9: error: *** JOB 37076122 ON gizmoj9 CANCELLED AT 2024-01-24T10:27:54 ***

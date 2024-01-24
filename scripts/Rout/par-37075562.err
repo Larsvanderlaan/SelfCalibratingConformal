@@ -1,0 +1,10 @@
+Lmod has detected the following error: These module(s) or extension(s) exist
+but cannot be loaded as requested: "libpciaccess/0.14-GCCcore-8.3.0"
+   Try: "module spider libpciaccess/0.14-GCCcore-8.3.0" to see how to load the
+module(s).
+
+
+
+Error in library(conformal) : there is no package called ‘conformal’
+Calls: source -> withVisible -> eval -> eval -> library
+Execution halted
