@@ -8,7 +8,7 @@ library(conformalInference)
 library(data.table)
 
 dir_path <- "~/repositories"
-dir_path <- "~"
+#dir_path <- "~"
 source(paste0(dir_path, "/conformal/scripts/sim_helpers.R"))
 
 
@@ -55,10 +55,10 @@ compute_calibration_error <- function(f, Y) {
   return(calibration_error)
 }
 
-run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train) {
+run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, cond_var_type = 1) {
 #Lrnr_xgboost$new(max_depth = max_depth)
   #lrnr <- Lrnr_gam$new()
-  data_list <- generate_data_splits(n_train, n_train, n_test, d = d, distr_shift = TRUE, shape = shape)
+  data_list <- generate_data_splits(n_train, n_train, n_test, d = d, distr_shift = TRUE, shape = shape, cond_var_type = 1)
   data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
   X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
   Y_train <- data_train$Y; Y_cal <- data_cal$Y; Y_test <- data_test$Y
@@ -80,11 +80,6 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train) {
   preds_marg$method <- "marginal"
 
 
-
-  #sqrt(mean((preds_iso$f - data_test$mu)^2))
-  #sqrt(mean((preds_marg$f - data_test$mu)^2))
-  # sqrt(mean((preds_bin$f - data_test$mu)^2))
-  #all_preds <- rbindlist(list(preds_bin, preds_iso, preds_marg))
 
   all_preds <- rbindlist(list(preds_bin, preds_bin2, preds_iso, preds_cond, preds_marg))
   nmethod <- nrow(all_preds) / nrow(preds_bin)
@@ -129,27 +124,11 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train) {
   results <- rbindlist(list(results_marginal, results_by_hetero))
   setkey(results, bin, method)
 
-  # out <- rbindlist(lapply(quantile(data_train$Y, seq(0.7,0.9, length = 10)), function(threshold) {
-  #   treatment_rule <- function(f, lower, upper){
-  #     # high risk, so only treat if above threshold.
-  #     treatment <- 1*(upper <= threshold)
-  #     return(treatment)
-  #   }
-  #
-  #   all_preds$A <- treatment_rule(all_preds$f, all_preds$lower, all_preds$upper)
-  #   out <- all_preds[, mean(Z1 * A + Z0 * (1-A)), by = method]
-  #   print(out)
-  #   out$threshold <- threshold
-  #   return(out)
-  # }))
-
-
-
-
-
-
   return(results)
 }
+
+
+
 
 
 #

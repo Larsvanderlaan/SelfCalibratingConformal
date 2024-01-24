@@ -3,7 +3,7 @@ library(data.table)
 library(sl3)
 library(mvtnorm)
 
-generate_data <- function(n, d = 5, shape = 3, distr_shift = FALSE, ...) {
+generate_data <- function(n, d = 5, shape = 3, distr_shift = FALSE, cond_var_type = 1, ...) {
   # covariates
   X <- as.matrix(replicate(d, runif(n, 0, 1)))
   if(distr_shift) {
@@ -13,7 +13,12 @@ generate_data <- function(n, d = 5, shape = 3, distr_shift = FALSE, ...) {
   # biomarker mean and variance
   mu <-    rowMeans(X + sin(4*X))
   sigma_range <- c(0.05, 0.4)^2
-  sigma2 <-  abs(mu)^6
+  if (cond_var_type == 1) {
+    sigma2 <-  abs(mu)^6
+  } else if (cond_var_type == 2) {
+    sigma2 <-  abs(rowMeans(X))^6
+  }
+
   sigma2 <-  sigma_range[1] +  sigma_range[2] * (sigma2 - min(sigma2))/(diff(range(sigma2)))
   # biomarker
   Y <- rnorm(n, mu, sigma2)
