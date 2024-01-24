@@ -22,6 +22,8 @@ lrnr_name <- as.character(lrnr_name)
 d <- as.numeric(d)
 shape <- as.numeric(shape)
 
+print(paste(lrnr_name, d, shape))
+
 if(lrnr_name == "gam") {
   lrnr <- lrnr_gam
 } else if(lrnr_name == "xg") {
