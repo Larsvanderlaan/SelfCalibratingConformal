@@ -81,3 +81,18 @@ labs(title = "Reverse Cumulative Distribution Function of Conformity Scores",
        linetype = "")
 
 ggsave("plot_RCDF_scores.pdf")
+
+
+
+
+
+
+######
+# efficiency and coverage plots
+#####
+results$method
+
+ggplot(results, aes(x = bin, y = coverage, color = method)) + geom_point()
+ggplot(results, aes(x = bin, y = width, color = method)) + geom_point()
+
+
