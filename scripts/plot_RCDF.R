@@ -5,14 +5,15 @@
 
 set.seed(12345)
 d <- 5
-n_train <- n_test <-  500
-shape <- 3
-alpha <- 0.05
+n_train <- n_test <-  1000
+shape <- 4
+b = 0.5
+alpha <- 0.1
 library(sl3)
 
 
 get_scores_rcdf <- function(lrnr, lrnr_name) {
-  data_list <- generate_data_splits(n_train, n_train, n_test, d = d, distr_shift = TRUE, shape = shape)
+  data_list <- generate_data_splits(n_train, n_train, n_test, d = d, distr_shift = TRUE, shape = shape, b = b)
   data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
   X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
   Y_train <- data_train$Y; Y_cal <- data_cal$Y; Y_test <- data_test$Y
@@ -24,7 +25,7 @@ get_scores_rcdf <- function(lrnr, lrnr_name) {
   out <- conformal_calibrator(f_train = f_cal, Y_train = Y_cal, f_test = f_test, calibrator = iso_calibrator, alpha = alpha, num_bins_Y = 100)
 
 
-  data_bench <- generate_data_splits(n_train = 2, n_cal = 50000, 2, d = d, distr_shift = TRUE, shape = shape)$data_cal
+  data_bench <- generate_data_splits(n_train = 2, n_cal = 50000, 2, d = d, distr_shift = TRUE, shape = shape, b = b)$data_cal
   X_bench <- data_bench$X
   Y_bench <- data_bench$Y
   f_bench <- predictor(X_bench)

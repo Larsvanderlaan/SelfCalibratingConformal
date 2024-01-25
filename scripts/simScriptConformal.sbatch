@@ -17,12 +17,14 @@ source(paste0(dir_path, "/conformal/scripts/run_sims.R"));
 lrnr_name <- Sys.getenv("lrnr_name")
 d <- Sys.getenv("d")
 shape <- Sys.getenv("shape")
-cond_var_type <- Sys.getenv("cond_var_type")
+b <- Sys.getenv("b")
+name <- Sys.getenv("name")
 
 lrnr_name <- as.character(lrnr_name)
 d <- as.numeric(d)
 shape <- as.numeric(shape)
-cond_var_type <- as.character(cond_var_type)
+b <- as.numeric(b)
+name <- as.character("name")
 
 print(paste(lrnr_name, d, shape))
 
@@ -36,6 +38,6 @@ if(lrnr_name == "gam") {
 
 n_train <- 1000
 alpha <- 0.1
-out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape,   cond_var_type = cond_var_type)
-fwrite(out, file = paste0("~/conformal/results/sims_", n_train, "_", lrnr_name, "_", d, "_", alpha, "_", shape, "_", cond_var_type, ".csv"))
+out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape,   b = b)
+fwrite(out, file = paste0("~/conformal/results/sims_", name, "_", n_train, "_", lrnr_name, "_", d, "_", alpha, "_", shape, "_", b, ".csv"))
 '

@@ -8,7 +8,7 @@ library(conformalInference)
 library(data.table)
 
 dir_path <- "~/repositories"
-dir_path <- "~"
+#dir_path <- "~"
 source(paste0(dir_path, "/conformal/scripts/sim_helpers.R"))
 
 
@@ -55,10 +55,10 @@ compute_calibration_error <- function(f, Y) {
   return(calibration_error)
 }
 
-run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, cond_var_type = 1) {
+run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, b = b) {
 #Lrnr_xgboost$new(max_depth = max_depth)
   #lrnr <- Lrnr_gam$new()
-  data_list <- generate_data_splits(n_train, n_train, n_test, d = d, distr_shift = TRUE, shape = shape, cond_var_type = cond_var_type)
+  data_list <- generate_data_splits(n_train, n_train, n_test, d = d, distr_shift = TRUE, shape = shape, b = b)
   data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
   X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
   Y_train <- data_train$Y; Y_cal <- data_cal$Y; Y_test <- data_test$Y
@@ -126,6 +126,10 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, cond_
 
   return(results)
 }
+
+
+
+
 
 
 

@@ -6,8 +6,8 @@ from sklearn.model_selection import KFold
 
 ### Run cross validation to determine the hyperparameter in front of the kernel penalty
 def runCV(XCalib,scoresCalib,kernel,gamma,alpha,k,minRad,maxRad,numRad,phiCalib):    
-    radii = np.linspace(minRad,maxRad,numRad)
-        
+    radii = np.geomspace(minRad,maxRad,numRad)
+    print(radii)
     folds = KFold(n_splits = k, shuffle = True)
     Klist = []
     for i, (trainIndex, testIndex) in enumerate(folds.split(XCalib)):
@@ -31,8 +31,11 @@ def runCV(XCalib,scoresCalib,kernel,gamma,alpha,k,minRad,maxRad,numRad,phiCalib)
             resid = (scoresCalib[testIndex] -
                     (Klist[i] @ prob.var_dict['weights'].value -
                     phiCalib[testIndex,:]@prob.constraints[2].dual_value).reshape(-1,1))
+                    
+            
             loss = sum(0.5 * np.abs(resid) + (1 - alpha - 0.5)*resid) * (1/(len(testIndex)))
             allLosses[countR] = allLosses[countR] + loss[0]/k
+             
              
             
         countR = countR + 1

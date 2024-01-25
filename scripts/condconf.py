@@ -25,11 +25,12 @@ def run_fun(x_calib : np.ndarray,
               score_fn = lambda x, y : np.abs(y - predictor(x))
               score_inv_fn = lambda s, x : [predictor(x) - s, predictor(x) + s]
               #score_inv_fn_lb = lambda s, x : [predictor(x) - s, np.inf]
-              #phi_fn = phi_fn
+              #phi_fn = phi_fn_intercept
               #infinite_params = {}
               
-              allLosses, radii = runCV(x_calib,score_fn(x_calib, y_calib),infinite_params['kernel'],infinite_params['gamma'], alpha,5,
-                                 1, 200, 50, phi_fn(x_calib))
+              allLosses, radii = runCV(x_calib,score_fn(x_calib, y_calib),infinite_params['kernel'],infinite_params['gamma'], alpha,10,
+                                 10, 10000, 50, phi_fn(x_calib))
+              print(allLosses)
               selectedRadius = radii[np.argmin(allLosses)]
               print(selectedRadius)
               #stop

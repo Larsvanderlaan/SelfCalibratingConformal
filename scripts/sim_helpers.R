@@ -3,7 +3,8 @@ library(data.table)
 library(sl3)
 library(mvtnorm)
 
-generate_data <- function(n, d = 5, shape = 3, distr_shift = FALSE, cond_var_type = 1, ...) {
+
+generate_data <- function(n, d = 5, shape = 3, b = 0.5, distr_shift = FALSE,  ...) {
   # covariates
   X <- as.matrix(replicate(d, runif(n, 0, 1)))
   if(distr_shift) {
@@ -11,21 +12,16 @@ generate_data <- function(n, d = 5, shape = 3, distr_shift = FALSE, cond_var_typ
   }
   colnames(X) <- paste0("X", 1:d)
   # biomarker mean and variance
-  mu <-    rowMeans(X + sin(4*X))
-  sigma_range <- c(0.05, 0.4)^2
-  if (cond_var_type == 1) {
-    sigma2 <-  abs(mu)^6
-  } else if (cond_var_type == 2) {
-    sigma2 <-  abs(rowMeans(X))^6
-  }
 
-  sigma2 <-  sigma_range[1] +  sigma_range[2] * (sigma2 - min(sigma2))/(diff(range(sigma2)))
-  # biomarker
+  mu <-    rowMeans(X + sin(4*X))
+  #sigma_range <- c(0.05, 0.4)^2
+  sigma2 <-  0.025 + b * ( abs(mu)^6 / 20 - 0.02)
+
   Y <- rnorm(n, mu, sigma2)
    #Y <- qs[findInterval(Y, qs, all.inside = TRUE)]
-  median(Y)
-  plot(mu, Y)
-  plot(mu, sqrt(sigma2))
+  #median(Y)
+  #plot(mu, Y)
+  #plot(mu, sqrt(sigma2))
 
   # potential outcomes being indicator of death
   thresh_upper <- quantile(Y, 0.8)
@@ -61,11 +57,11 @@ generate_data <- function(n, d = 5, shape = 3, distr_shift = FALSE, cond_var_typ
 
 }
 
-generate_data_splits <- function(n_train, n_cal, n_test, distr_shift = FALSE, shape = 1, ...) {
+generate_data_splits <- function(n_train, n_cal, n_test, distr_shift = FALSE, shape = 1, b = 0.5, ...) {
 
-  data_train <- generate_data(n_train, distr_shift = distr_shift, shape = shape, ...)
-  data_cal <- generate_data(n_cal, ...)
-  data_test <-generate_data(n_test, ...)
+  data_train <- generate_data(n_train, distr_shift = distr_shift, shape = shape, b= b, ...)
+  data_cal <- generate_data(n_cal, shape = 1, b = b, ...)
+  data_test <-generate_data(n_test, shape = 1, b = b, ...)
 
   return(list(data_train = data_train, data_cal = data_cal, data_test = data_test))
 }
