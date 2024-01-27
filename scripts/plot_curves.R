@@ -3,17 +3,19 @@
 
 
 plot_curves <- function(n, b = 0.5) {
-
+  library(ggplot2)
   alpha <- 0.1
   lrnr <- Lrnr_gam$new()
-  data_list <- generate_data_splits( n,  n, n_test = 200, d = 1, distr_shift = TRUE, shape = 1, b = b)
+  data_list <- generate_data_splits(1000,  n, n_test = 100, d = 1, distr_shift = TRUE, shape = 1, b = b)
   data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
   X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
   Y_train <- data_train$Y; Y_cal <- data_cal$Y; Y_test <- data_test$Y
 
   # get predictor using learning algorithm specified by lrnr
   predictor <- train_predictor(X_train, Y_train, lrnr)
+  predictor <- function(X) {
 
+  }
   #
   preds_bin <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 10)
   preds_bin2 <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 5)
@@ -39,29 +41,29 @@ plot_curves <- function(n, b = 0.5) {
   preds_oracle$X <- as.vector(X_test)
   preds_oracle$method <- NULL
   library(ggplot2)
-  ggplot(all_preds, aes(x = X, color = method)) +
+  fwrite(all_preds, file = paste0("plots/curves_", n, "_", b, ".csv"))
+
+
+
+  plt <- ggplot(all_preds, aes(x = X, color = method)) +
     geom_step(aes(y = lower))  +
     geom_step(aes(y = upper)) +
     geom_line(data = preds_oracle, aes(x = X, y = lower), color = "black", alpha = 0.5)  +
     geom_line(data = preds_oracle, aes(x = X, y = upper), color = "black", alpha = 0.5) +
-    facet_grid(~method)
+    theme(legend.position="bottom") + theme_bw()
 
 
-  ggplot(all_preds, aes(x = X, color = method)) +
-    geom_step(aes(y = lower))  +
-    geom_step(aes(y = upper)) +
-    geom_line(data = preds_oracle, aes(x = X, y = lower), color = "black", alpha = 0.5)  +
-    geom_line(data = preds_oracle, aes(x = X, y = upper), color = "black", alpha = 0.5) +
-    theme(legend.position="bottom")
+  ggsave(plot = plt, filename =  paste0("plots/curves_", n, "_", b, ".pdf") )
+  return(plt)
 
 }
 
 plt1 <- plot_curves(100)
 
-plt2 <- plot_curves(500)
+plt2 <- plot_curves(300)
 
 plt3 <- plot_curves(1000)
 
 
-plt4 <- plot_curves(10000)
+plt4 <- plot_curves(5000)
 
