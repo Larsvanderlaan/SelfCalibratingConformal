@@ -8,7 +8,7 @@ library(conformalInference)
 library(data.table)
 
 dir_path <- "~/repositories"
-#dir_path <- "~"
+dir_path <- "~"
 source(paste0(dir_path, "/conformal/scripts/sim_helpers.R"))
 
 
@@ -66,6 +66,7 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, b = 0
   # get predictor using learning algorithm specified by lrnr
   predictor <- train_predictor(X_train, Y_train, lrnr)
 
+  preds_oracle <- do_conformal_oracle(X_cal, Y_cal, X_test, predictor, alpha = alpha, data_test = data_test)
   print("histogram binning")
   preds_bin_10 <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 10)
   preds_bin_5 <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 5)
@@ -78,6 +79,7 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, b = 0
   preds_cond <- do_conformal_conditional(X_cal, Y_cal, X_test, predictor, alpha = alpha)
   preds_marg <- do_conformal_marginal(X_cal, Y_cal, X_test, predictor, alpha = alpha)
 
+  preds_oracle$method <- "oracle"
   preds_bin_10$method <- "cal_binning_10"
   preds_bin_5$method <- "cal_binning_5"
   preds_iso$method <- "isotonic"
@@ -87,7 +89,7 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, b = 0
   preds_mondrian_10$method <- "mondrian_5"
 
 
-  all_preds <- rbindlist(list(preds_bin_10, preds_bin_5, preds_mondrian_10, preds_mondrian_5, preds_iso, preds_cond, preds_marg))
+  all_preds <- rbindlist(list(preds_oracle, preds_bin_10, preds_bin_5, preds_mondrian_10, preds_mondrian_5, preds_iso, preds_cond, preds_marg))
   nmethod <- nrow(all_preds) / nrow(preds_bin_10)
   all_preds$mu <- rep(data_test$mu, nmethod)
   all_preds$Y <- rep(Y_test, nmethod)

@@ -177,6 +177,23 @@ do_conformal_mondrian <- function(X_cal, Y_cal, X_test, predictor, alpha, nbin =
   return(cf_preds)
 }
 
+
+do_conformal_oracle <- function(X_cal, Y_cal, X_test, predictor, alpha, data_test, ...) {
+
+  mu <-   data_test$mu
+  #sigma_range <- c(0.05, 0.4)^2
+  sigma2 <- data_test$sigma2
+  lower <- qnorm(alpha/2, mu, sigma2)
+  upper <- qnorm(1 - alpha/2, mu, sigma2)
+
+
+  cf_preds <- data.table(f = as.vector(predictor(X_test)),
+                         lower = lower,
+                         upper = upper,
+                         width = upper - lower)
+  return(cf_preds)
+}
+
 #
 #
 # # parameters
