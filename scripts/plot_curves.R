@@ -6,7 +6,7 @@ plot_curves <- function(n, b = 0.5) {
 
   alpha <- 0.1
   lrnr <- Lrnr_gam$new()
-  data_list <- generate_data_splits( n,  n, n_test = 100, d = 1, distr_shift = TRUE, shape = 1, b = b)
+  data_list <- generate_data_splits( n,  n, n_test = 200, d = 1, distr_shift = TRUE, shape = 1, b = b)
   data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
   X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
   Y_train <- data_train$Y; Y_cal <- data_cal$Y; Y_test <- data_test$Y
@@ -18,7 +18,7 @@ plot_curves <- function(n, b = 0.5) {
   preds_bin <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 10)
   preds_bin2 <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 5)
   preds_iso <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = iso_calibrator)
-  preds_cond <- do_conformal_conditional(X_cal, Y_cal, X_test, predictor, alpha = alpha)
+  preds_cond <- do_conformal_conditional(X_cal, Y_cal, X_test, predictor, alpha = alpha, lambd = 0.00001)
   preds_marg <- do_conformal_marginal(X_cal, Y_cal, X_test, predictor, alpha = alpha)
 
   preds_bin$method <- "binning"
@@ -34,7 +34,7 @@ plot_curves <- function(n, b = 0.5) {
   preds_oracle$method <- "oracle"
 
   all_preds <- rbindlist(list(preds_iso, preds_cond, preds_marg))
-  all_preds <- preds_cond
+  #all_preds <- preds_cond
   all_preds$X <- rep(as.vector(X_test), nrow(all_preds) / nrow(X_test))
   preds_oracle$X <- as.vector(X_test)
   preds_oracle$method <- NULL
@@ -55,3 +55,13 @@ plot_curves <- function(n, b = 0.5) {
     theme(legend.position="bottom")
 
 }
+
+plt1 <- plot_curves(100)
+
+plt2 <- plot_curves(500)
+
+plt3 <- plot_curves(1000)
+
+
+plt4 <- plot_curves(10000)
+

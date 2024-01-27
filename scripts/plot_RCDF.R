@@ -2,7 +2,7 @@
 ###########
 # plots of RCDF of conformity scores
 ###########
-
+library(ggplot2)
 set.seed(12345)
 d <- 5
 n_train <- n_test <-  1000
@@ -85,15 +85,5 @@ ggsave("plot_RCDF_scores.pdf")
 
 
 
-
-
-
-######
-# efficiency and coverage plots
-#####
-results$method
-
-ggplot(results, aes(x = bin, y = coverage, color = method)) + geom_point()
-ggplot(results, aes(x = bin, y = width, color = method)) + geom_point()
 
 

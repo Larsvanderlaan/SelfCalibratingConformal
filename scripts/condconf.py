@@ -5,7 +5,7 @@ from scipy.optimize import linprog
 from sklearn.metrics.pairwise import pairwise_kernels
 from typing import Callable
 
-FUNCTION_DEFAULTS = {"kernel": None, "gamma" : 1, "lambda": 1}
+FUNCTION_DEFAULTS = {"kernel": None, "gamma" : 4, "lambda": 1}
 
  
 
@@ -13,13 +13,14 @@ def phi_fn(x : np.ndarray):
     return x
 def phi_fn_intercept(x):
     return np.ones((x.shape[0], 1))
-infinite_params = {'kernel': 'rbf', 'gamma': None, 'lambda': 0.005}
+infinite_params = {'kernel': 'rbf', 'gamma': 4, 'lambda': 0.005}
 
 def run_fun(x_calib : np.ndarray,
             y_calib : np.ndarray,
             x_test : np.ndarray,
             predictor : callable,
-            alpha: float = 0.05):
+            alpha: float = 0.05,
+            lambd: float = -1):
               
              # print(phi_fn(x_calib))
               score_fn = lambda x, y : np.abs(y - predictor(x))
@@ -28,13 +29,18 @@ def run_fun(x_calib : np.ndarray,
               #phi_fn = phi_fn_intercept
               #infinite_params = {}
               
-              allLosses, radii = runCV(x_calib,score_fn(x_calib, y_calib),infinite_params['kernel'],infinite_params['gamma'], alpha,10,
+              if(lambd < 0):
+                
+                allLosses, radii = runCV(x_calib,score_fn(x_calib, y_calib),infinite_params['kernel'],infinite_params['gamma'], alpha,10,
                                  10, 10000, 50, phi_fn(x_calib))
-              print(allLosses)
-              selectedRadius = radii[np.argmin(allLosses)]
-              print(selectedRadius)
-              #stop
-              infinite_params['lambda'] = 1/selectedRadius
+                print(allLosses)
+                selectedRadius = radii[np.argmin(allLosses)]
+                print(selectedRadius)
+                infinite_params['lambda'] = 1/selectedRadius
+              else: 
+                infinite_params['lambda'] = lambd
+
+              print(infinite_params['lambda'])
               cond_conf = CondConf(score_fn, phi_fn, infinite_params = infinite_params)
               cond_conf.setup_problem(x_calib, y_calib)
               

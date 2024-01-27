@@ -24,7 +24,7 @@ lrnr_name <- as.character(lrnr_name)
 d <- as.numeric(d)
 shape <- as.numeric(shape)
 b <- as.numeric(b)
-name <- as.character("name")
+name <- as.character(name)
 
 print(paste(lrnr_name, d, shape))
 

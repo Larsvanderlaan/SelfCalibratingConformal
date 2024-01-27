@@ -15,8 +15,9 @@ generate_data <- function(n, d = 5, shape = 3, b = 0.5, distr_shift = FALSE,  ..
 
   mu <-    rowMeans(X + sin(4*X))
   #sigma_range <- c(0.05, 0.4)^2
-  sigma2 <-  0.025 + b * ( abs(mu)^6 / 20 - 0.02)
-
+  sigma2 <-  0.03+ b * ( abs(mu)^6 / 20 - 0.02)
+  #plot(X, sqrt(sigma2))
+  #plot(mu, sqrt(sigma2))
   Y <- rnorm(n, mu, sigma2)
    #Y <- qs[findInterval(Y, qs, all.inside = TRUE)]
   #median(Y)
@@ -106,11 +107,11 @@ do_conformal_calibration <- function(X_cal, Y_cal, X_test, predictor, alpha, cal
   return(cf_preds)
 }
 
-do_conformal_conditional <- function(X_cal, Y_cal, X_test, predictor, alpha, ...) {
+do_conformal_conditional <- function(X_cal, Y_cal, X_test, predictor, alpha, lambd = -1, ...) {
   library(reticulate)
   source_python(paste0(dir_path, "/conformal/scripts/condconf.py"))
   source_python(paste0(dir_path, "/conformal/scripts/crossval.py"))
-  out <- run_fun(as.matrix(X_cal), as.matrix(Y_cal),  x_test = as.matrix(X_test), predictor = predictor, alpha = alpha)
+  out <- run_fun(as.matrix(X_cal), as.matrix(Y_cal),  x_test = as.matrix(X_test), predictor = predictor, alpha = alpha, lambd = lambd)
   cf_preds <- as.data.table(do.call(cbind, out))
   names(cf_preds) <- c("lower", "upper", "f")
   cf_preds <- cf_preds[, c("f", "lower", "upper"), with = FALSE]
