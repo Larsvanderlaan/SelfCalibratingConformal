@@ -8,19 +8,17 @@ plot_curves <- function(n, b = 0.5) {
   lrnr <- Lrnr_gam$new()
   data_list <- generate_data_splits(1000,  n, n_test = 100, d = 1, distr_shift = TRUE, shape = 1, b = b)
   data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
-  X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
-  Y_train <- data_train$Y; Y_cal <- data_cal$Y; Y_test <- data_test$Y
-
+  X_train <- data_train$X; X_cal <- data_cal$X; #X_test <- data_test$X
+  Y_train <- data_train$Y; Y_cal <- data_cal$Y; #Y_test <- data_test$Y
+  X_test <- seq(0, 1, length = 500)
   # get predictor using learning algorithm specified by lrnr
   predictor <- train_predictor(X_train, Y_train, lrnr)
-  predictor <- function(X) {
 
-  }
   #
   preds_bin <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 10)
   preds_bin2 <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 5)
   preds_iso <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = iso_calibrator)
-  preds_cond <- do_conformal_conditional(X_cal, Y_cal, X_test, predictor, alpha = alpha, lambd = 0.00001)
+  preds_cond <- do_conformal_conditional(X_cal, Y_cal, X_test, predictor, alpha = alpha, lambd = 1e-5)
   preds_marg <- do_conformal_marginal(X_cal, Y_cal, X_test, predictor, alpha = alpha)
 
   preds_bin$method <- "binning"
@@ -58,12 +56,13 @@ plot_curves <- function(n, b = 0.5) {
 
 }
 
-plt1 <- plot_curves(100)
+plt1 <- plot_curves(50)
 
-plt2 <- plot_curves(300)
+plt2 <- plot_curves(100)
 
-plt3 <- plot_curves(1000)
+plt3 <- plot_curves(250)
 
+plt4 <- plot_curves(500)
 
-plt4 <- plot_curves(5000)
+plt4 <- plot_curves(1000)
 

@@ -5,7 +5,7 @@
 library(ggplot2)
 set.seed(12345)
 d <- 5
-n_train <- n_test <-  1000
+n_train <- n_test <-  500
 shape <- 4
 b = 0.5
 alpha <- 0.1
@@ -78,8 +78,8 @@ plt <- ggplot(df, aes(x = scores, y = cdf, color = learner, linetype = Status)) 
 labs(title = "Reverse Cumulative Distribution Function of Conformity Scores",
        x = "Conformity score",
        y = "RCDF",
-       color = "Learner",
-       linetype = "")
+       color = "",
+       linetype = "") + theme_bw() +  theme(legend.position="bottom")
 
 ggsave("plot_RCDF_scores.pdf")
 

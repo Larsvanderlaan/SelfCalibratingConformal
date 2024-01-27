@@ -2,7 +2,7 @@
 library(data.table)
 library(sl3)
 library(mvtnorm)
-
+library(caret)
 
 generate_data <- function(n, d = 5, shape = 3, b = 0.5, distr_shift = FALSE,  ...) {
   # covariates
@@ -111,7 +111,8 @@ do_conformal_conditional <- function(X_cal, Y_cal, X_test, predictor, alpha, lam
   library(reticulate)
   source_python(paste0(dir_path, "/conformal/scripts/condconf.py"))
   source_python(paste0(dir_path, "/conformal/scripts/crossval.py"))
-  out <- run_fun(as.matrix(X_cal), as.matrix(Y_cal),  x_test = as.matrix(X_test), predictor = predictor, alpha = alpha, lambd = lambd)
+  source_python(paste0(dir_path, "/conformal/scripts/sim_helpers.py"))
+  out <- run_conditional_kernel(as.matrix(X_cal), as.matrix(Y_cal),  x_test = as.matrix(X_test), predictor = predictor, alpha = alpha, lambd = lambd)
   cf_preds <- as.data.table(do.call(cbind, out))
   names(cf_preds) <- c("lower", "upper", "f")
   cf_preds <- cf_preds[, c("f", "lower", "upper"), with = FALSE]
@@ -141,6 +142,38 @@ do_conformal_marginal <- function(X_cal, Y_cal, X_test, predictor, alpha, ...) {
   )
   cf_preds <- data.table(f = as.vector(out$pred), lower = as.vector(out$lo), upper = as.vector(out$up))
   cf_preds$width = cf_preds$upper - cf_preds$lower
+  return(cf_preds)
+}
+
+
+do_conformal_mondrian <- function(X_cal, Y_cal, X_test, predictor, alpha, nbin = 10, ...) {
+  library(reticulate)
+  source_python(paste0(dir_path, "/conformal/scripts/condconf.py"))
+  source_python(paste0(dir_path, "/conformal/scripts/crossval.py"))
+  source_python(paste0(dir_path, "/conformal/scripts/sim_helpers.py"))
+  f_cal <- predictor(X_cal)
+  f_test <- predictor(X_test)
+  grid <- sort(unique(quantile(f_cal, seq(0, 1, length = nbin  + 1))))
+  bin_id_cal <- factor(findInterval(f_cal, grid, all.inside = TRUE), levels = 1:nbin)
+  bin_id_test <- factor(findInterval(f_test, grid, all.inside = TRUE), levels = 1:nbin)
+
+  # apply split-conformal within bins of predictions
+  cf_preds <- rbindlist(lapply(unique(bin_id_test), function(level) {
+    index_cal <- which(bin_id_cal == level)
+    index_test <- which(bin_id_test == level)
+    X_cal_sub <- X_cal[index_cal, ,drop = FALSE]
+    X_test_sub <- X_test[index_test, ,drop = FALSE]
+    Y_cal_sub <- Y_cal[index_cal]
+
+
+    cf_preds_sub <- do_conformal_marginal(X_cal_sub, Y_cal_sub, X_test_sub, predictor, alpha)
+    cf_preds_sub$index <- index_test
+    return(cf_preds_sub)
+    }))
+  # reorder so its back in original order
+  cf_preds <- cf_preds[order(cf_preds$index),]
+  # remove index column
+  cf_preds$index <- NULL
   return(cf_preds)
 }
 
