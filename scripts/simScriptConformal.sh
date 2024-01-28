@@ -2,7 +2,7 @@
 nsims=2500
 export R_LIBS=~/Rlibs2
 export R_LIBS_USER=~/Rlibs2
-for d in 1 2 5 10
+for d in 1 3 5 10
 do
   for lrnr_name in "gam"
     do

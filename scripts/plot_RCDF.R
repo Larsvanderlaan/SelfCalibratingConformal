@@ -71,7 +71,7 @@ scores_xgboost <- get_scores_rcdf(lrnr_xg, lrnr_name = "xgboost")
 df <- rbind(scores_gam, scores_ranger, scores_xgboost)
 # Plotting
 plt <- ggplot(df, aes(x = scores, y = cdf, color = learner, linetype = Status)) +
-  geom_line() +
+  geom_line(size = 0.8) +
   scale_color_manual(values = c("GAM" = "#1f77b4",  # A brighter, more vivid blue
                                 "random forests" = "#d62728",  # A richer, more eye-catching red
                                 "xgboost" = "#2ca02c")) +  # A more vibrant shade of green
@@ -79,9 +79,11 @@ labs(title = "Reverse Cumulative Distribution Function of Conformity Scores",
        x = "Conformity score",
        y = "RCDF",
        color = "",
-       linetype = "") + theme_bw() +  theme(legend.position="bottom")
+       linetype = "") + theme_bw() + ggtitle("") +
+  theme(legend.position= c(0.75,0.6),  legend.key.size = unit(2, "lines"),
+      legend.background = element_blank())
 
-ggsave("plot_RCDF_scores.pdf")
+ggsave("plots/plot_RCDF_scores.pdf", width = 4.5, height = 3.8)
 
 
 

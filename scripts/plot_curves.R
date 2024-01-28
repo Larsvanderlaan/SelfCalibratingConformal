@@ -24,9 +24,9 @@ plot_curves <- function(n, b = 0.5) {
 
   preds_bin$method <- "binning"
   preds_bin2$method <- "binning2"
-  preds_iso$method <- "Isotonic"
-  preds_cond$method <- "Conditional (kernel)"
-  preds_marg$method <- "Marginal"
+  preds_iso$method <- "isotonic"
+  preds_cond$method <- "conditional"
+  preds_marg$method <- "marginal"
 
   preds_oracle <- copy(preds_cond)
   preds_oracle$f <- data_test$mu
@@ -47,8 +47,8 @@ plot_curves <- function(n, b = 0.5) {
   plt <- ggplot(all_preds, aes(x = X, color = method)) +
     geom_step(aes(y = lower))  +
     geom_step(aes(y = upper)) +
-    geom_line(data = preds_oracle, aes(x = X, y = lower), color = "black", alpha = 0.5)  +
-    geom_line(data = preds_oracle, aes(x = X, y = upper), color = "black", alpha = 0.5) +
+    geom_line(data = preds_oracle, aes(x = X, y = lower), color = "black")  +
+    geom_line(data = preds_oracle, aes(x = X, y = upper), color = "black") +
     theme(legend.position="bottom") + theme_bw() + labs(color = "")
 
 
