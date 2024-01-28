@@ -85,8 +85,8 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, b = 0
   preds_iso$method <- "isotonic"
   preds_cond$method <- "conditional"
   preds_marg$method <- "marginal"
-  preds_mondrian_5$method <- "mondrian_10"
-  preds_mondrian_10$method <- "mondrian_5"
+  preds_mondrian_5$method <- "mondrian_5"
+  preds_mondrian_10$method <- "mondrian_10"
 
 
   all_preds <- rbindlist(list(preds_oracle, preds_bin_10, preds_bin_5, preds_mondrian_10, preds_mondrian_5, preds_iso, preds_cond, preds_marg))
@@ -104,6 +104,7 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, b = 0
   }
   all_preds$A <- treatment_rule(all_preds$f, all_preds$lower, all_preds$upper)
   all_preds$Y <- rep(data_test$Y , nmethod)
+
 
 
   # Extract bins for differences in the conditional variance.

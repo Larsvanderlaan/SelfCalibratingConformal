@@ -141,6 +141,8 @@ do_conformal_marginal <- function(X_cal, Y_cal, X_test, predictor, alpha, ...) {
     }
   )
   cf_preds <- data.table(f = as.vector(out$pred), lower = as.vector(out$lo), upper = as.vector(out$up))
+  cf_preds$upper <- pmin(cf_preds$upper, max(Y_cal))
+  cf_preds$lower <- pmax(cf_preds$lower, min(Y_cal))
   cf_preds$width = cf_preds$upper - cf_preds$lower
   return(cf_preds)
 }
