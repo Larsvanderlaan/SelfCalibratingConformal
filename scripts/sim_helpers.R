@@ -15,14 +15,14 @@ generate_data <- function(n, d = 5, shape = 3, b = 0.5, distr_shift = FALSE,  ..
 
   mu <-    rowMeans(X + sin(4*X))
   #sigma_range <- c(0.05, 0.4)^2
-  sigma2 <-  0.035 + b * ( abs(mu)^6 / 20 - 0.02)
-  #plot(X, sqrt(sigma2))
-  #plot(mu, sqrt(sigma2))f
-  Y <- rnorm(n, mu, sigma2)
+  sigma <-  0.035 + b * ( abs(mu)^6 / 20 - 0.02)
+  #plot(X, sqrt(sigma))
+  #plot(mu, sqrt(sigma))f
+  Y <- rnorm(n, mu, sigma)
    #Y <- qs[findInterval(Y, qs, all.inside = TRUE)]
   #median(Y)
   #plot(mu, Y)
-  #plot(mu, sqrt(sigma2))
+  #plot(mu, sqrt(sigma))
 
   # potential outcomes being indicator of death
   thresh_upper <- quantile(Y, 0.8)
@@ -50,7 +50,7 @@ generate_data <- function(n, d = 5, shape = 3, b = 0.5, distr_shift = FALSE,  ..
 
 
 
-  data <- list(X=X, Y = Y, Z1 = Z1, Z0 = Z0, mu = mu, sigma2 = sigma2)
+  data <- list(X=X, Y = Y, Z1 = Z1, Z0 = Z0, mu = mu, sigma = sigma)
   return(data)
   #c(mean(Z1[Y <= thresh]), mean(Z1[Y > thresh]))
   #c(mean(Z0[Y <= thresh]), mean(Z0[Y > thresh]))
@@ -185,9 +185,18 @@ do_conformal_oracle <- function(X_cal, Y_cal, X_test, predictor, alpha, data_tes
   f <-  as.vector(predictor(X_test))
   #sigma_range <- c(0.05, 0.4)^2
   mu <- data_test$mu
-  sigma2 <- data_test$sigma2
-  lower <- f +  qnorm(alpha/ 2, mu - f, sigma2)
-  upper <- f +qnorm(1 - alpha/2, mu - f, sigma2)
+  sigma <- data_test$sigma
+
+
+
+  radius <- sqrt(qchisq(1-alpha, df = 1, ncp = (f - mu)^2/sigma^2) * sigma^2)
+  #lower_q <-  qnorm(alpha/ 2, mu , sigma)
+  #upper_q <-   qnorm(1 - alpha/2, mu , sigma)
+  #radius <- pmax(f - lower_q, upper_q - f)
+  lower <- f - radius
+  upper <- f + radius
+
+
 
   cf_preds <- data.table(f = f,
                          lower = lower,
@@ -248,8 +257,8 @@ do_conformal_oracle <- function(X_cal, Y_cal, X_test, predictor, alpha, data_tes
 # all_preds$Z1 <- rep(data_test$Z1, nmethod)
 # all_preds$Z0 <- rep(data_test$Z0, nmethod)
 # # Extract bins for differences in the conditional variance.
-# sigma2 <- data_test$sigma2
-# bins_hetero <- findInterval(sigma2, quantile(sigma2, seq(0, 1 , length = 6)), all.inside = TRUE)
+# sigma <- data_test$sigma
+# bins_hetero <- findInterval(sigma, quantile(sigma, seq(0, 1 , length = 6)), all.inside = TRUE)
 # all_preds$bin <- rep(bins_hetero, nmethod)
 # setkey(all_preds, method, bin)
 # all_preds[, .(mean(Y >= lower & Y <= upper), mean(width)), by = c("method","bin")]

@@ -30,8 +30,8 @@ plot_curves <- function(n, b = 0.5) {
 
   preds_oracle <- copy(preds_cond)
   preds_oracle$f <- data_test$mu
-  preds_oracle$lower <- qnorm(0.05, data_test$mu, data_test$sigma2)
-  preds_oracle$upper <- qnorm(0.95, data_test$mu, data_test$sigma2)
+  preds_oracle$lower <- qnorm(0.05, data_test$mu, data_test$sigma)
+  preds_oracle$upper <- qnorm(0.95, data_test$mu, data_test$sigma)
   preds_oracle$method <- "Oracle"
 
   all_preds <- rbindlist(list(preds_iso, preds_cond, preds_marg))

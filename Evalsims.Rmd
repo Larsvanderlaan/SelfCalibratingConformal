@@ -13,17 +13,45 @@ Maybe use the two plots of the blocks tomorrow, with RF as less calibration and 
 library(data.table)
 library(ggplot2)
 out <- rbindlist(lapply(c(1, 1.5, 2, 2.5, 3), function(shape) {
-  data <- fread(paste0("results/sims_calibration_1000_rf_3_0.1_", shape, "_0.6.csv"))
+  data <- fread(paste0("results/sims_calibration_1000_rf_5_0.1_", shape, "_0.6.csv"))
   data$shape <- shape
   data
 }))
 
-out <- out[out$method %in% c("cal_binning_5", "mondrian_5", "marginal", "isotonic", "conditional")]
-ggplot(out[out$shape == 1], aes(x = bin, y = coverage, color = method)) + geom_point(aes(shape = method), size = 3) + theme_bw()
 
-ggplot(out[out$shape == 1], aes(x = bin, y = width, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw()
+method_names <- c("HistCAL-CP (5 bins)", "Conditional-CP", "SC-CP (ours)", "Unconditional-CP", "Mondrian-CP (5 bins)", "Oracle")
+names(method_names) <- c("cal_binning_1", "conditional", "isotonic","marginal", "mondrian_1", "oracle")
 
-ggplot(out[out$bin == "marginal"], aes(x = shape, y = width, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw()
+out <- out[out$method %in% c("cal_binning_1", "mondrian_1", "marginal", "isotonic", "conditional", "oracle")]
+
+out$method <- method_names[match(out$method, names(method_names))]
+
+out$method <- factor(out$method, levels = 
+                     c("SC-CP (ours)", "Conditional-CP" , "Unconditional-CP", "HistCAL-CP (5 bins)", "Mondrian-CP (5 bins)", "Oracle")  )
+
+
+
+ 
+plt1 <- ggplot(out[out$bin == "marginal"], aes(x = shape, y = width, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(x = TeX("Distribution shift in training data ($\\kappa_{train}$)"), y = "Interval Width") +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank())) + 
+ theme(legend.text = element_text(size = 11), legend.key.size = unit(2, "lines"))
+
+ 
+plt1
+ggsave("plots/calibration_shift.pdf" , width = 7, height = 5)
+ 
+
+
+ 
+plt2 <- ggplot(out[out$bin == "marginal"], aes(x = shape, y = coverage, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(x = TeX("Distribution shift in training data ($\\kappa_{train}$)"), y = TeX("Coverage ($\\alpha = 0.1$)")) +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank())) + 
+ theme(legend.text = element_text(size = 11), legend.key.size = unit(2, "lines"))
+
+ 
+plt2
+
+#combined_plot <- plt1 + plt2 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+ 
+ 
+#ggsave("plots/calibration_shift.pdf" , width = 7, height = 5)
 
 ```
 
@@ -33,16 +61,17 @@ ggplot(out[out$bin == "marginal"], aes(x = shape, y = width, color = method)) + 
 library(data.table)
 library(ggplot2)
 library(latex2exp)
-method_names <- c("HistCAL (5 bins)", "Conditional (Gibbs)", "IsoCAL (ours)", "Unconditional", "Mondrian (5 bins)", "Oracle")
+method_names <- c("HistCAL (5 bins)", "Conditional-CP", "SC-CP (ours)", "Unconditional-CP", "Mondrian-CP (5 bins)", "Oracle")
 names(method_names) <- c("cal_binning_5", "conditional", "isotonic","marginal", "mondrian_5", "oracle")
 
 out <- fread(paste0("results/sims_coverage_1000_gam_5_0.1_1_0.6.csv"))
+#out <- fread(paste0("results/sims_calibration_1000_rf_5_0.1_1_0.6.csv"))
 
-out <- out[out$method %in% c("oracle", "mondrian_5", "marginal", "isotonic", "conditional")]
+out <- out[out$method %in% c("oracle", "cal_binning_5", "mondrian_5", "marginal", "isotonic", "conditional")]
 out$method <- method_names[match(out$method, names(method_names))]
 
 out$method <- factor(out$method, levels = 
-                     c("IsoCAL (ours)", "Conditional (Gibbs)" , "Unconditional", "HistCAL (5 bins)", "Mondrian (5 bins)", "Oracle")  )
+                     c("SC-CP (ours)", "Conditional-CP" , "Unconditional-CP", "HistCAL (5 bins)", "Mondrian-CP (5 bins)", "Oracle")  )
 
 
 
@@ -62,9 +91,15 @@ plot2 <- ggplot(out , aes(x = bin, y = width, color = method)) + geom_point(aes(
                                                        "Uncond."))   +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))
 
 library(patchwork)
-combined_plot <- plot1 + plot2 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+combined_plot <- plot1 + plot2 + plot_layout(guides = "collect") & theme(legend.position = "")
 combined_plot
+print(combined_plot)
+
+ggsave("plots/conditional_coverage.pdf", plot = combined_plot, width = 6, height = 3.5)
 # this plot is good
+
+
+plot1 + plot2 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
 ```
 
 

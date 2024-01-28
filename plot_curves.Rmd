@@ -19,11 +19,11 @@ data <- rbindlist(lapply(c( 50, 100, 300, 1000), function(n) {
   data$n <- n
   return(data)
 }))
-data[data$method == "Isotonic", "method"] <- "Isotonic (ours)"
-data[data$method == "isotonic", "method"] <- "Isotonic (ours)"
-data[data$method == "conditional", "method"] <- "Conditional (Gibbs)"
-data[data$method == "Conditional (kernel)", "method"] <- "Conditional (Gibbs)"
-data[data$method == "marginal", "method"] <- "Marginal"
+data[data$method == "Isotonic", "method"] <- "SC-CP (ours)"
+#data[data$method == "isotonic", "method"] <- "Isotonic (ours)"
+#data[data$method == "conditional", "method"] <- "Conditional (Gibbs)"
+data[data$method == "Conditional (kernel)", "method"] <- "Conditional-CP"
+data[data$method == "Marginal", "method"] <- "Unconditional"
 
 alpha <- 0.1
 n_test <- 1000
@@ -37,6 +37,56 @@ preds_oracle <- data.table(X = as.vector(data_test$X),
                            upper = qnorm(0.95, data_test$mu, data_test$sigma2),
                            method = "Oracle")
 
+
+ 
+
+data$method <- factor(data$method, levels = c("SC-CP (ours)", "Conditional-CP", "Unconditional"))
+
+appender <- function(string) {
+    TeX(paste("$n_{cal} = $", string)) 
+}
+
+
+plt <- ggplot(data, aes(x = X, color = method, linetype = method)) +
+  geom_step(aes(y = lower), size = 0.8)  +
+  geom_step(aes(y = upper), size = 0.8) +
+  geom_line(data = preds_oracle, aes(x = X, y = lower), color = "black", alpha = 1, linetype = "solid")  +
+  geom_line(data = preds_oracle, aes(x = X, y = upper), color = "black", alpha = 1, linetype = "solid") +
+  theme(legend.position="bottom") + theme_bw() + labs(x = "Covariate (X)", color = "", y = "Outcome (Y)") + facet_wrap(~ n, labeller = as_labeller(appender, 
+                            default = label_parsed) ) +  labs(color  = "", linetype = "", shape = "")   + theme(legend.key.size = unit(1, "cm"), 
+        legend.text = element_text(size = 12),  # Adjust text size here
+        legend.title = element_text(size = 14), # Adjust title size here
+        legend.position = "bottom", 
+        legend.direction = "horizontal",
+        legend.margin = margin(0,0,0,0),
+        legend.box.margin = margin(-10,-10,-10,-10)) +
+  scale_linetype_manual(values = c("solid", "dotted", "dashed", "dotdash"))
+
+#theme(legend.key.size = unit(1, "cm"), legend.position = "bottom", legend.direction = "horizontal",
+                                                                                            #  legend.margin=margin(0,0,0,0),
+    #    legend.box.margin=margin(-10,-10,-10,-10))  +
+  #scale_linetype_manual(values=c("solid", "dotted", "dashed", "dotdash"))  
+
+plt
+
+
+ggsave(file="plots/curves_pooled.pdf", width=7, height=5)
+# 
+# plt <- ggplot(data, aes(x = X, color = method, linetype = method)) +
+#   geom_step(aes(y = lower), size = 0.8)  +
+#   geom_step(aes(y = upper), size = 0.8) +
+#   theme(legend.key.size = unit(1, "cm"), legend.direction = "horizontal")  +
+#   scale_linetype_manual(values=c("solid", "dotted", "dashed", "dotdash")) +
+#   labs(color  = "", linetype = "", shape = "")  
+# 
+# library(cowplot)
+# library(grid)
+# legend <-  get_legend(plt)
+# pdf("plots/curves_pooled_legend.pdf", width = 5, height = 1) # Adjust the width and height as needed
+# grid.draw(legend)
+# dev.off()
+# 
+#  
 #X_grid <- seq(0, 1, length = 10000)
 
 # new_data <- rbindlist(unlist(lapply(unique(data$method), function(method) {
@@ -65,48 +115,9 @@ preds_oracle <- data.table(X = as.vector(data_test$X),
 #   })}), recursive = FALSE))
 # 
 # 
-linetypes <- c("solid", "dotted", "dashed")
-data$method <- factor(data$method, levels = c("Isotonic (ours)", "Conditional (Gibbs)", "Marginal"))
-
-appender <- function(string) {
-    TeX(paste("$n_{cal} = $", string)) 
-}
 
 
-plt <- ggplot(data, aes(x = X, color = method, linetype = method)) +
-  geom_step(aes(y = lower), size = 0.8)  +
-  geom_step(aes(y = upper), size = 0.8) +
-  geom_line(data = preds_oracle, aes(x = X, y = lower), color = "black", alpha = 1, linetype = "solid")  +
-  geom_line(data = preds_oracle, aes(x = X, y = upper), color = "black", alpha = 1, linetype = "solid") +
-  theme(legend.position="bottom") + theme_bw() + labs(color = "", y = "Y") + facet_wrap(~ n, labeller = as_labeller(appender, 
-                            default = label_parsed) ) +  labs(color  = "", linetype = "", shape = "")   + theme(legend.key.size = unit(1, "cm"), legend.position = "bottom", legend.direction = "horizontal",
-                                                                                                    legend.margin=margin(0,0,0,0),
-        legend.box.margin=margin(-10,-10,-10,-10))  +
-  scale_linetype_manual(values=c("solid", "dotted", "dashed", "dotdash"))  
-
-plt
-
-
-ggsave(file="plots/curves_pooled.pdf", width=7, height=5)
-# 
-# plt <- ggplot(data, aes(x = X, color = method, linetype = method)) +
-#   geom_step(aes(y = lower), size = 0.8)  +
-#   geom_step(aes(y = upper), size = 0.8) +
-#   theme(legend.key.size = unit(1, "cm"), legend.direction = "horizontal")  +
-#   scale_linetype_manual(values=c("solid", "dotted", "dashed", "dotdash")) +
-#   labs(color  = "", linetype = "", shape = "")  
-# 
-# library(cowplot)
-# library(grid)
-# legend <-  get_legend(plt)
-# pdf("plots/curves_pooled_legend.pdf", width = 5, height = 1) # Adjust the width and height as needed
-# grid.draw(legend)
-# dev.off()
-# 
-#  
-
-
-ggsave(file="plots/curves_pooled_legend.pdf", width=7, height=5)
+#ggsave(file="plots/curves_pooled_legend.pdf", width=7, height=5)
  
 
 ```

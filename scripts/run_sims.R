@@ -63,6 +63,9 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, b = 0
   X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
   Y_train <- data_train$Y; Y_cal <- data_cal$Y; Y_test <- data_test$Y
 
+  data_bench <- generate_data_splits(n_train, n_train, 100000, d = d, distr_shift = TRUE, shape = shape, b = b)$data_test
+
+
   # get predictor using learning algorithm specified by lrnr
   predictor <- train_predictor(X_train, Y_train, lrnr)
 
@@ -108,8 +111,8 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, b = 0
 
 
   # Extract bins for differences in the conditional variance.
-  sigma2 <- data_test$sigma2
-  bins_hetero <- findInterval(sigma2, quantile(sigma2, seq(0, 1 , length = 6)), all.inside = TRUE)
+  sigma <- data_test$sigma
+  bins_hetero <- findInterval(sigma, quantile(sigma, seq(0, 1 , length = 6)), all.inside = TRUE)
   all_preds$bin <- rep(bins_hetero, nmethod)
   setkey(all_preds, method, bin)
   print(dim(all_preds))
