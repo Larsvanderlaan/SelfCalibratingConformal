@@ -11,6 +11,7 @@ module load R
 module load Python/3.8.2-GCCcore-9.3.0
 echo "R LOADED"
 Rscript -e '
+set.seed(12345)
 dir_path = "~";
 source(paste0(dir_path, "/conformal/scripts/R_setup.R"));
 source(paste0(dir_path, "/conformal/scripts/run_sims.R"));

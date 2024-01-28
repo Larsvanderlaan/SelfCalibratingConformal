@@ -11,6 +11,7 @@ module load R
 module load Python/3.8.2-GCCcore-9.3.0
 echo "R LOADED"
 Rscript -e '
+set.seed(12345)
 dir_path = "~";
 source(paste0(dir_path, "/conformal/scripts/R_setup.R"));
 source(paste0(dir_path, "/conformal/scripts/run_sims.R"));
@@ -38,6 +39,6 @@ if(lrnr_name == "gam") {
 
 n_train <- 1000
 alpha <- 0.1
-out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape,   b = b, n_test = 5000)
+out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape,   b = b, n_test = 2000)
 fwrite(out, file = paste0("~/conformal/results/sims_", name, "_", n_train, "_", lrnr_name, "_", d, "_", alpha, "_", shape, "_", b, ".csv"))
 '

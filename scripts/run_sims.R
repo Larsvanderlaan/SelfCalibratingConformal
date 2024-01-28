@@ -68,11 +68,11 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, b = 0
 
   preds_oracle <- do_conformal_oracle(X_cal, Y_cal, X_test, predictor, alpha = alpha, data_test = data_test)
   print("histogram binning")
-  preds_bin_10 <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 10)
-  preds_bin_5 <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 5)
+  preds_bin_1 <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 20)
+  preds_bin_2 <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = binning_calibrator, nbin = 10)
   print("mondrian")
-  preds_mondrian_10 <- do_conformal_mondrian(X_cal, Y_cal, X_test, predictor, alpha = alpha, nbin = 10)
-  preds_mondrian_5 <- do_conformal_mondrian(X_cal, Y_cal, X_test, predictor, alpha = alpha, nbin = 5)
+  preds_mondrian_1 <- do_conformal_mondrian(X_cal, Y_cal, X_test, predictor, alpha = alpha, nbin = 20)
+  preds_mondrian_2 <- do_conformal_mondrian(X_cal, Y_cal, X_test, predictor, alpha = alpha, nbin = 10)
   print("iso")
   preds_iso <- do_conformal_calibration(X_cal, Y_cal, X_test, predictor, alpha = alpha, calibrator = iso_calibrator)
   print("conditional")
@@ -80,17 +80,17 @@ run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, b = 0
   preds_marg <- do_conformal_marginal(X_cal, Y_cal, X_test, predictor, alpha = alpha)
 
   preds_oracle$method <- "oracle"
-  preds_bin_10$method <- "cal_binning_10"
-  preds_bin_5$method <- "cal_binning_5"
+  preds_bin_1$method <- "cal_binning_1"
+  preds_bin_2$method <- "cal_binning_2"
   preds_iso$method <- "isotonic"
   preds_cond$method <- "conditional"
   preds_marg$method <- "marginal"
-  preds_mondrian_5$method <- "mondrian_5"
-  preds_mondrian_10$method <- "mondrian_10"
+  preds_mondrian_1$method <- "mondrian_1"
+  preds_mondrian_2$method <- "mondrian_2"
 
 
-  all_preds <- rbindlist(list(preds_oracle, preds_bin_10, preds_bin_5, preds_mondrian_10, preds_mondrian_5, preds_iso, preds_cond, preds_marg))
-  nmethod <- nrow(all_preds) / nrow(preds_bin_10)
+  all_preds <- rbindlist(list(preds_oracle, preds_bin_1, preds_bin_2, preds_mondrian_2, preds_mondrian_1, preds_iso, preds_cond, preds_marg))
+  nmethod <- nrow(all_preds) / nrow(preds_bin_1)
   all_preds$mu <- rep(data_test$mu, nmethod)
   all_preds$Y <- rep(Y_test, nmethod)
   all_preds$Z1 <- rep(data_test$Z1, nmethod)
