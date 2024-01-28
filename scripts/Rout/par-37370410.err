@@ -1,0 +1,20 @@
+
+The following have been reloaded with a version change:
+  1) GCCcore/12.2.0 => GCCcore/9.3.0
+  2) SQLite/3.39.4-GCCcore-12.2.0 => SQLite/3.31.1-GCCcore-9.3.0
+  3) Tcl/8.6.12-GCCcore-12.2.0 => Tcl/8.6.10-GCCcore-9.3.0
+  4) XZ/5.2.7-GCCcore-12.2.0 => XZ/5.2.5-GCCcore-9.3.0
+  5) binutils/2.39-GCCcore-12.2.0 => binutils/2.34-GCCcore-9.3.0
+  6) bzip2/1.0.8-GCCcore-12.2.0 => bzip2/1.0.8-GCCcore-9.3.0
+  7) libffi/3.4.4-GCCcore-12.2.0 => libffi/3.3-GCCcore-9.3.0
+  8) libreadline/8.2-GCCcore-12.2.0 => libreadline/8.0-GCCcore-9.3.0
+  9) ncurses/6.3-GCCcore-12.2.0 => ncurses/6.2-GCCcore-9.3.0
+ 10) zlib/1.2.12-GCCcore-12.2.0 => zlib/1.2.11-GCCcore-9.3.0
+
+Registered S3 methods overwritten by 'lava':
+  method    from              
+  plot.sim  conformalInference
+  print.sim conformalInference
+Loading required package: ggplot2
+Loading required package: lattice
+slurmstepd-gizmok164: error: *** JOB 37370410 ON gizmok164 CANCELLED AT 2024-01-28T10:46:15 ***

@@ -21,3 +21,4 @@ Loading required package: lattice
 Warning message:
 In system("timedatectl", intern = TRUE) :
   running command 'timedatectl' had status 1
+slurmstepd-gizmoj24: error: *** JOB 37359291 ON gizmoj24 CANCELLED AT 2024-01-28T10:14:55 ***

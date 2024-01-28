@@ -19,3 +19,4 @@ Loading required package: ggplot2
 Loading required package: lattice
 /home/lvanderl/.local/lib/python3.8/site-packages/cvxpy/problems/problem.py:1403: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
   warnings.warn(
+slurmstepd-gizmok22: error: *** JOB 37359248 ON gizmok22 CANCELLED AT 2024-01-28T10:14:55 ***
