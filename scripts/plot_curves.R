@@ -6,7 +6,7 @@ plot_curves <- function(n, b = 0.5) {
   library(ggplot2)
   alpha <- 0.1
   lrnr <- Lrnr_gam$new()
-  data_list <- generate_data_splits(1000,  n, n_test = 100, d = 1, distr_shift = TRUE, shape = 1, b = b)
+  data_list <- generate_data_splits(1000,  n, n_test = 1000, d = 1, distr_shift = TRUE, shape = 1, b = b)
   data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
   X_train <- data_train$X; X_cal <- data_cal$X; #X_test <- data_test$X
   Y_train <- data_train$Y; Y_cal <- data_cal$Y; #Y_test <- data_test$Y
@@ -23,15 +23,15 @@ plot_curves <- function(n, b = 0.5) {
 
   preds_bin$method <- "binning"
   preds_bin2$method <- "binning2"
-  preds_iso$method <- "isotonic"
-  preds_cond$method <- "conditional"
-  preds_marg$method <- "marginal"
+  preds_iso$method <- "Isotonic"
+  preds_cond$method <- "Conditional (kernel)"
+  preds_marg$method <- "Marginal"
 
   preds_oracle <- copy(preds_cond)
   preds_oracle$f <- data_test$mu
   preds_oracle$lower <- qnorm(0.05, data_test$mu, data_test$sigma2)
   preds_oracle$upper <- qnorm(0.95, data_test$mu, data_test$sigma2)
-  preds_oracle$method <- "oracle"
+  preds_oracle$method <- "Oracle"
 
   all_preds <- rbindlist(list(preds_iso, preds_cond, preds_marg))
   #all_preds <- preds_cond
@@ -48,7 +48,7 @@ plot_curves <- function(n, b = 0.5) {
     geom_step(aes(y = upper)) +
     geom_line(data = preds_oracle, aes(x = X, y = lower), color = "black", alpha = 0.5)  +
     geom_line(data = preds_oracle, aes(x = X, y = upper), color = "black", alpha = 0.5) +
-    theme(legend.position="bottom") + theme_bw()
+    theme(legend.position="bottom") + theme_bw() + labs(color = "")
 
 
   ggsave(plot = plt, filename =  paste0("plots/curves_", n, "_", b, ".pdf") )
@@ -60,9 +60,11 @@ plt1 <- plot_curves(50)
 
 plt2 <- plot_curves(100)
 
-plt3 <- plot_curves(250)
+plt3 <- plot_curves(300)
 
 plt4 <- plot_curves(500)
 
-plt4 <- plot_curves(1000)
+plt5 <- plot_curves(1000)
+
+plt6 <- plot_curves(5000)
 
