@@ -6,11 +6,12 @@ plot_curves <- function(n, b = 0.5) {
   library(ggplot2)
   alpha <- 0.1
   lrnr <- Lrnr_gam$new()
-  data_list <- generate_data_splits(1000,  n, n_test = 1000, d = 1, distr_shift = TRUE, shape = 1, b = b)
+  n_test <- 1000
+  data_list <- generate_data_splits(1000,  n, n_test = n_test, d = 1, distr_shift = TRUE, shape = 1, b = b)
   data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
-  X_train <- data_train$X; X_cal <- data_cal$X; #X_test <- data_test$X
-  Y_train <- data_train$Y; Y_cal <- data_cal$Y; #Y_test <- data_test$Y
-  X_test <- seq(0, 1, length = 500)
+  X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
+  Y_train <- data_train$Y; Y_cal <- data_cal$Y; Y_test <- data_test$Y
+  #X_test <- seq(0, 1, length = n_test)
   # get predictor using learning algorithm specified by lrnr
   predictor <- train_predictor(X_train, Y_train, lrnr)
 
@@ -39,7 +40,7 @@ plot_curves <- function(n, b = 0.5) {
   preds_oracle$X <- as.vector(X_test)
   preds_oracle$method <- NULL
   library(ggplot2)
-  fwrite(all_preds, file = paste0("plots/curves_", n, "_", b, ".csv"))
+  fwrite(all_preds, file = paste0(dir_path, "/conformal/plots/curves_", n, "_", b, ".csv"))
 
 
 
@@ -51,7 +52,7 @@ plot_curves <- function(n, b = 0.5) {
     theme(legend.position="bottom") + theme_bw() + labs(color = "")
 
 
-  ggsave(plot = plt, filename =  paste0("plots/curves_", n, "_", b, ".pdf") )
+  ggsave(plot = plt, filename =  paste0(dir_path, "/conformal/plots/curves_", n, "_", b, ".pdf") )
   return(plt)
 
 }
