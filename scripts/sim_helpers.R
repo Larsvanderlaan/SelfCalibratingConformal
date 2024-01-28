@@ -17,7 +17,7 @@ generate_data <- function(n, d = 5, shape = 3, b = 0.5, distr_shift = FALSE,  ..
   #sigma_range <- c(0.05, 0.4)^2
   sigma2 <-  0.035 + b * ( abs(mu)^6 / 20 - 0.02)
   #plot(X, sqrt(sigma2))
-  #plot(mu, sqrt(sigma2))
+  #plot(mu, sqrt(sigma2))f
   Y <- rnorm(n, mu, sigma2)
    #Y <- qs[findInterval(Y, qs, all.inside = TRUE)]
   #median(Y)
@@ -182,14 +182,14 @@ do_conformal_mondrian <- function(X_cal, Y_cal, X_test, predictor, alpha, nbin =
 
 do_conformal_oracle <- function(X_cal, Y_cal, X_test, predictor, alpha, data_test, ...) {
 
-  mu <-   data_test$mu
+  f <-  as.vector(predictor(X_test))
   #sigma_range <- c(0.05, 0.4)^2
+  mu <- data_test$mu
   sigma2 <- data_test$sigma2
-  lower <- qnorm(alpha/2, mu, sigma2)
-  upper <- qnorm(1 - alpha/2, mu, sigma2)
+  lower <- f +  qnorm(alpha/ 2, mu - f, sigma2)
+  upper <- f +qnorm(1 - alpha/2, mu - f, sigma2)
 
-
-  cf_preds <- data.table(f = as.vector(predictor(X_test)),
+  cf_preds <- data.table(f = f,
                          lower = lower,
                          upper = upper,
                          width = upper - lower)

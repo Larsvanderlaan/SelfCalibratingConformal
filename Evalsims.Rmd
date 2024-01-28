@@ -12,8 +12,8 @@ Maybe use the two plots of the blocks tomorrow, with RF as less calibration and 
 ```{r}
 library(data.table)
 library(ggplot2)
-out <- rbindlist(lapply(c(1, 2, 3, 4, 5), function(shape) {
-  data <- fread(paste0("results/sims_calibration_1000_rf_5_0.1_", shape, "_0.6.csv"))
+out <- rbindlist(lapply(c(1, 1.5, 2, 2.5, 3), function(shape) {
+  data <- fread(paste0("results/sims_calibration_1000_rf_3_0.1_", shape, "_0.6.csv"))
   data$shape <- shape
   data
 }))
@@ -32,14 +32,38 @@ ggplot(out[out$bin == "marginal"], aes(x = shape, y = width, color = method)) + 
 ```{r}
 library(data.table)
 library(ggplot2)
+library(latex2exp)
+method_names <- c("HistCAL (5 bins)", "Conditional (Gibbs)", "IsoCAL (ours)", "Unconditional", "Mondrian (5 bins)", "Oracle")
+names(method_names) <- c("cal_binning_5", "conditional", "isotonic","marginal", "mondrian_5", "oracle")
 
 out <- fread(paste0("results/sims_coverage_1000_gam_5_0.1_1_0.6.csv"))
 
-out <- out[out$method %in% c("cal_binning_5", "mondrian_5", "marginal", "isotonic", "conditional")]
-ggplot(out , aes(x = bin, y = coverage, color = method)) + geom_point(aes(shape = method), size = 3) + theme_bw()
+out <- out[out$method %in% c("oracle", "mondrian_5", "marginal", "isotonic", "conditional")]
+out$method <- method_names[match(out$method, names(method_names))]
 
-ggplot(out , aes(x = bin, y = width, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw()
+out$method <- factor(out$method, levels = 
+                     c("IsoCAL (ours)", "Conditional (Gibbs)" , "Unconditional", "HistCAL (5 bins)", "Mondrian (5 bins)", "Oracle")  )
 
+
+
+plot1 <- ggplot(out , aes(x = bin, y = coverage, color = method)) + geom_point(aes(shape = method), size = 3) + theme_bw() + labs(y = TeX("Coverage ($\\alpha = 0.1$)"), x = TeX("Quintiles of $\\sigma^2(X)$")) + scale_x_discrete(labels = c("Q.1", 
+                                                       "Q.2",
+                                                       "Q.3",
+                                                       "Q.4",
+                                                       "Q.5",
+                                                       "Uncond."))  +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))
+
+
+plot2 <- ggplot(out , aes(x = bin, y = width, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(y = "Interval Width", x = TeX("Quintiles of $\\sigma^2(X)$")) + scale_x_discrete(labels = c("Q.1", 
+                                                       "Q.2",
+                                                       "Q.3",
+                                                       "Q.4",
+                                                       "Q.5",
+                                                       "Uncond."))   +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))
+
+library(patchwork)
+combined_plot <- plot1 + plot2 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+combined_plot
 # this plot is good
 ```
 
