@@ -30,6 +30,7 @@
 ~%2Frepositories%2Fconformal%2Fscripts%2FsimScriptConformal.sh="BC6F9856"
 ~%2Frepositories%2Fconformal%2Fscripts%2FsimScriptConformal_calibration.sh="238F2E86"
 ~%2Frepositories%2Fconformal%2Fscripts%2FsimScriptConformal_coverage.sh="3FDF3B19"
+~%2Frepositories%2Fconformal%2Fscripts%2FsimScriptConformal_plotcurves.sbatch="29D62BD3"
 ~%2Frepositories%2Fconformal%2Fscripts%2Fsim_helpers.R="1E25A933"
 ~%2Frepositories%2Fconformal%2Fscripts%2Fsim_helpers.py="B7C4A0F3"
 ~%2Frepositories%2Fconformal%2Fscripts%2Ftemplate.sbatch="E61E412D"
