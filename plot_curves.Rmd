@@ -19,11 +19,11 @@ data <- rbindlist(lapply(c( 50, 100, 300, 1000), function(n) {
   data$n <- n
   return(data)
 }))
-data[data$method == "Isotonic", "method"] <- "SC-CP (ours)"
+data[data$method == "isotonic", "method"] <- "SC-CP (ours)"
 #data[data$method == "isotonic", "method"] <- "Isotonic (ours)"
 #data[data$method == "conditional", "method"] <- "Conditional (Gibbs)"
-data[data$method == "Conditional (kernel)", "method"] <- "Conditional-CP"
-data[data$method == "Marginal", "method"] <- "Unconditional"
+data[data$method == "conditional", "method"] <- "Cond-CP"
+data[data$method == "marginal", "method"] <- "Uncond-CP"
 
 alpha <- 0.1
 n_test <- 1000
@@ -40,7 +40,7 @@ preds_oracle <- data.table(X = as.vector(data_test$X),
 
  
 
-data$method <- factor(data$method, levels = c("SC-CP (ours)", "Conditional-CP", "Unconditional"))
+data$method <- factor(data$method, levels = c("SC-CP (ours)", "Cond-CP", "Uncond-CP"))
 
 appender <- function(string) {
     TeX(paste("$n_{cal} = $", string)) 
