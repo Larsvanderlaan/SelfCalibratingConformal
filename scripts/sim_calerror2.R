@@ -70,7 +70,7 @@ results_all <- rbindlist(lapply(1:1000, function(iter) {
     results$iter <- iter
   })
   return(results)
-}))
+}), fill = TRUE)
 
 fwrite(results_all, "calerror_2.csv")
 fwrite(results_all, paste0(dir_path, "/conformal/results/calerror_2.csv"))
