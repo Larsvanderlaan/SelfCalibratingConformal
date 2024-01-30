@@ -66,17 +66,28 @@ get_widths_cal <- function(n_cal) {
 results_all <- rbindlist(lapply(1:1000, function(iter) {
   try({
     print(iter)
-    results <- rbindlist(lapply(c(20, 30, 40, 50, 75, 100, 200, 300, 500), get_widths_cal) )
+    results <- rbindlist(lapply(c(20, 30, 40, 50, 75, 100, 200, 300, 500, 700, 1000), get_widths_cal) )
     results$iter <- iter
   })
   return(results)
-}), fill = TRUE)
+}))
 
 fwrite(results_all, "calerror_2.csv")
 fwrite(results_all, paste0(dir_path, "/conformal/results/calerror_2.csv"))
 
 #, 30, 40, 50, 75, 100, 200, 300, 500
 results <- results_all[, .(width = mean(width)), by = c("n", "alpha", "Status")]
+
+
+ggplot(results , aes(x = n, y = width, color = as.factor(alpha), linetype = Status)) + geom_line() + scale_x_log10()
+
+library(latex2exp)
+tmp <- results[, .(relative = width[Status=="Calibrated"] / width[Status=="Uncalibrated"]) , by = c("n", "alpha")]
+ggplot(tmp , aes(x = n, y = relative, color = as.factor(alpha), linetype = as.factor(alpha))) + geom_line() +
+  theme_bw() + labs(y = TeX("Relative Width (cal/uncal)"), x = TeX("$n_{cal}$"), color = TeX("$\\alpha$"), linetype = TeX("$\\alpha$")) + scale_x_log10() +
+  geom_hline(yintercept = 1, color = "black", linetype = "dashed" , alpha = 0.5)
+
+
 
 
 #fwrite(results, paste0(dir_path, "/conformal/results/calerror_2.csv"))

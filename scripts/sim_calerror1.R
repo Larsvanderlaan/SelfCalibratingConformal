@@ -70,7 +70,7 @@ results_all <- rbindlist(lapply(1:1000, function(iter) {
   })
   return(results)
 }), fill = TRUE)
-#fwrite(results_all, "calerror_1.csv")
+fwrite(results_all, "calerror_1.csv")
 fwrite(results_all, paste0(dir_path, "/conformal/results/calerror_1.csv"))
 
 results <- results_all[, .(width = mean(width), cal_error = mean(cal_error)), by = c("shape", "alpha", "Status")]
@@ -79,3 +79,10 @@ results <- results_all[, .(width = mean(width), cal_error = mean(cal_error)), by
 
 
 ggplot(results , aes(x = cal_error, y = width, color = as.factor(alpha), linetype = Status)) + geom_line()
+
+library(latex2exp)
+tmp <- results[, .(relative = width[Status=="Calibrated"] / width[Status=="Uncalibrated"]) , by = c("cal_error", "alpha")]
+ggplot(tmp , aes(x = cal_error, y = relative, color = as.factor(alpha), linetype = as.factor(alpha))) + geom_line() +
+  theme_bw() + labs(y = TeX("Relative Width (cal/uncal)"), x = "Calibration error of f", color = TeX("$\\alpha$"), linetype = TeX("$\\alpha$"))
+
+

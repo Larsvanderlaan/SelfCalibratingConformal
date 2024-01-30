@@ -55,7 +55,7 @@ plt2
 
 ```
 
-
+## Experiment 2: good example
 
 ```{r}
 library(data.table)
@@ -63,8 +63,9 @@ library(ggplot2)
 library(latex2exp)
 method_names <- c("HistCAL (5 bins)", "Cond-CP", "SC-CP (ours)", "Uncond-CP", "Mondrian-CP", "Oracle")
 names(method_names) <- c("cal_binning_5", "conditional", "isotonic","marginal", "mondrian_1", "oracle")
-
-out <- fread(paste0("results/sims_coverage_1000_gam_5_0.1_1_0.6.csv"))
+a <- 0
+b <- 0.6
+out <- fread(paste0("results/sims_coverage_1000_gam_5_0.1_1_", b, "_", a, ".csv"))
 #out <- fread(paste0("results/sims_calibration_1000_rf_5_0.1_1_0.6.csv"))
 
 out <- out[out$method %in% c("oracle",   "mondrian_1", "marginal", "isotonic", "conditional")]
@@ -101,5 +102,123 @@ ggsave("plots/conditional_coverage.pdf", plot = combined_plot, width = 6, height
 
 plot1 + plot2 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
 ```
+## Experiment 2: good example high d
 
+```{r}
+library(data.table)
+library(ggplot2)
+library(latex2exp)
+method_names <- c("HistCAL (5 bins)", "Cond-CP", "SC-CP (ours)", "Uncond-CP", "Mondrian-CP", "Oracle")
+names(method_names) <- c("cal_binning_5", "conditional", "isotonic","marginal", "mondrian_1", "oracle")
+a <- 0
+b <- 0.6
+out <- fread(paste0("results/sims_coverage_1000_gam_20_0.1_1_", b, "_", a, ".csv"))
+#out <- fread(paste0("results/sims_calibration_1000_rf_5_0.1_1_0.6.csv"))
+
+out <- out[out$method %in% c("oracle",   "mondrian_1", "marginal", "isotonic", "conditional")]
+out$method <- method_names[match(out$method, names(method_names))]
+
+out$method <- factor(out$method, levels = 
+                     c("SC-CP (ours)", "Cond-CP" , "Uncond-CP", "HistCAL (5 bins)", "Mondrian-CP", "Oracle")  )
+
+
+
+plot3 <- ggplot(out , aes(x = bin, y = coverage, color = method)) + geom_point(aes(shape = method), size = 3) + theme_bw() + labs(y = TeX("Coverage ($\\alpha = 0.1$)"), x = TeX("Quintiles of $\\sigma^2(X)$")) + scale_x_discrete(labels = c("Q.1", 
+                                                       "Q.2",
+                                                       "Q.3",
+                                                       "Q.4",
+                                                       "Q.5",
+                                                       "Uncond."))  +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed") + geom_hline(yintercept = 0.9, alpha = 0.5, color = "red")
+
+
+plot4 <- ggplot(out , aes(x = bin, y = width, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(y = "Interval Width", x = TeX("Quintiles of $\\sigma^2(X)$")) + scale_x_discrete(labels = c("Q.1", 
+                                                       "Q.2",
+                                                       "Q.3",
+                                                       "Q.4",
+                                                       "Q.5",
+                                                       "Uncond."))   +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed")
+
+library(patchwork)
+combined_plot <- plot3 + plot4 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+combined_plot
+print(combined_plot)
+
+ggsave("plots/conditional_coverage_highd.pdf", plot = combined_plot, width = 6, height = 3.5)
+# this plot is good
+
+
+plot1 <- plot1 + ggtitle("d=5")
+plot3 <- plot3 + ggtitle("d=20")
+
+combined_plot <- plot1 + plot2+ plot3+ plot4 + plot_layout( guides = "collect", axis_titles ="collect") & theme(legend.position = "bottom") 
+
+
+ggsave("plots/conditional_coverage_both.pdf", plot = combined_plot, width = 6, height = 6)
+
+```
+
+
+## Experiment 2: bad example
+
+```{r}
+library(data.table)
+library(ggplot2)
+library(latex2exp)
+method_names <- c("HistCAL (5 bins)", "Cond-CP", "SC-CP (ours)", "Uncond-CP", "Mondrian-CP", "Oracle")
+names(method_names) <- c("cal_binning_5", "conditional", "isotonic","marginal", "mondrian_1", "oracle")
+a <- 0.6
+b <- 0
+out <- fread(paste0("results/sims_coverage_1000_gam_5_0.1_1_", b, "_", a, ".csv"))
+#out <- fread(paste0("results/sims_calibration_1000_rf_5_0.1_1_0.6.csv"))
+
+out <- out[out$method %in% c("oracle",   "mondrian_1", "marginal", "isotonic", "conditional")]
+out$method <- method_names[match(out$method, names(method_names))]
+
+out$method <- factor(out$method, levels = 
+                     c("SC-CP (ours)", "Cond-CP" , "Uncond-CP", "HistCAL (5 bins)", "Mondrian-CP", "Oracle")  )
+
+
+
+plot5 <- ggplot(out , aes(x = bin, y = coverage, color = method)) + geom_point(aes(shape = method), size = 3) + theme_bw() + labs(y = TeX("Coverage ($\\alpha = 0.1$)"), x = TeX("Quintiles of $\\sigma^2(X)$")) + scale_x_discrete(labels = c("Q.1", 
+                                                       "Q.2",
+                                                       "Q.3",
+                                                       "Q.4",
+                                                       "Q.5",
+                                                       "Uncond."))  +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed") + geom_hline(yintercept = 0.9, alpha = 0.5, color = "red")
+
+
+plot6 <- ggplot(out , aes(x = bin, y = width, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(y = "Interval Width", x = TeX("Quintiles of $\\sigma^2(X)$")) + scale_x_discrete(labels = c("Q.1", 
+                                                       "Q.2",
+                                                       "Q.3",
+                                                       "Q.4",
+                                                       "Q.5",
+                                                       "Uncond."))   +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed")
+
+library(patchwork)
+combined_plot <- plot5 + plot6 + plot_layout(guides = "collect") & theme(legend.position = "")
+combined_plot
+print(combined_plot)
+
+ggsave("plots/conditional_coverage_adverserial.pdf", plot = combined_plot, width = 6, height = 3.5)
+# this plot is good
+
+
+ 
+```
+
+
+```{r}
+
+
+
+plot1 <- plot1 + ggtitle("d=5")
+plot3 <- plot3 + ggtitle("d=20")
+plot5 <- plot5 + ggtitle("Adverserial (d=5)")
+combined_plot <- plot1 + plot2+ plot3+ plot4 + plot5 + plot6+ plot_layout(ncol =2, guides = "collect", axis_titles ="collect") & theme(legend.position = "bottom") 
+
+
+ggsave("plots/conditional_coverage_triple.pdf", plot = combined_plot, width = 6, height = 8)
+
+
+```
 
