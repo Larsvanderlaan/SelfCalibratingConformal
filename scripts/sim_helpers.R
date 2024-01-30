@@ -211,6 +211,31 @@ do_conformal_oracle <- function(X_cal, Y_cal, X_test, predictor, alpha, data_tes
   return(cf_preds)
 }
 
+
+
+compute_calibration_error <- function(f, Y) {
+  #data <- generate_data_splits(10000, 2, 2, d = d)$data_train
+  #X <- data$X
+  #Y <- data$Y
+  f <- as.vector(f)
+  Y <- as.vector(Y)
+  lrnr <-  make_learner(Pipeline, Lrnr_cv$new(Stack$new(
+    Lrnr_xgboost$new(max_depth = 3),
+    Lrnr_xgboost$new(max_depth = 4),
+    Lrnr_xgboost$new(max_depth = 5),
+    Lrnr_xgboost$new(max_depth = 6),
+    Lrnr_xgboost$new(max_depth = 7),
+    Lrnr_xgboost$new(max_depth = 8),
+    Lrnr_xgboost$new(max_depth = 9)
+  )), Lrnr_cv_selector$new(loss_squared_error))
+
+  task <- sl3_Task$new(data.table(f,Y), covariates = "f", outcome = "Y")
+  f_cal <- lrnr$train(task)$predict(task)
+  # debiased calibration error estimator of https://proceedings.mlr.press/v151/xu22c/xu22c.pdf
+  calibration_error <- sqrt(max(mean((f_cal - f)*(Y - f)), 0))
+  return(calibration_error)
+}
+
 #
 #
 # # parameters
