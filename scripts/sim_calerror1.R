@@ -70,8 +70,12 @@ results_all <- rbindlist(lapply(1:1000, function(iter) {
   })
   return(results)
 }))
+fwrite(results_all, "calerror_1.csv")
+fwrite(results_all, paste0(dir_path, "/conformal/results/calerror_1.csv"))
 
 results <- results_all[, .(width = mean(width), cal_error = mean(cal_error)), by = c("shape", "alpha", "Status")]
-fwrite(results, paste0(dir_path, "/conformal/results/calerror_1.csv"))
+
+
+
 
 ggplot(results , aes(x = cal_error, y = width, color = as.factor(alpha), linetype = Status)) + geom_line()

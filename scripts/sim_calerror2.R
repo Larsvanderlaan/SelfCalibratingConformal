@@ -72,9 +72,12 @@ results_all <- rbindlist(lapply(1:1000, function(iter) {
   return(results)
 }))
 
+fwrite(results_all, "calerror_2.csv")
+fwrite(results_all, paste0(dir_path, "/conformal/results/calerror_2.csv"))
+
 #, 30, 40, 50, 75, 100, 200, 300, 500
 results <- results_all[, .(width = mean(width)), by = c("n", "alpha", "Status")]
 
 
-fwrite(results, paste0(dir_path, "/conformal/results/calerror_2.csv"))
+#fwrite(results, paste0(dir_path, "/conformal/results/calerror_2.csv"))
 
