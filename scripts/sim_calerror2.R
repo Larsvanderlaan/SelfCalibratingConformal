@@ -63,17 +63,17 @@ get_widths_cal <- function(n_cal) {
   return(out)
 }
 
-results_all <- rbindlist(lapply(1:1000, function(iter) {
+results_all <- lapply(1:1000, function(iter) {
   try({
     print(iter)
     results <- rbindlist(lapply(c(20, 30, 40, 50, 75, 100, 200, 300, 500, 700, 1000), get_widths_cal) )
     results$iter <- iter
   })
   return(results)
-}))
+})
 
-fwrite(results_all, "calerror_2.csv")
-fwrite(results_all, paste0(dir_path, "/conformal/results/calerror_2.csv"))
+saveRDS(results_all, paste0(dir_path, "/conformal/results/calerror_2.rds"))
+
 
 #, 30, 40, 50, 75, 100, 200, 300, 500
 results <- results_all[, .(width = mean(width)), by = c("n", "alpha", "Status")]
