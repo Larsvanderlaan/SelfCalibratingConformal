@@ -64,6 +64,7 @@ get_widths_cal <- function(n_cal) {
 }
 
 results_all <- lapply(1:1000, function(iter) {
+  results <- NULL
   try({
     print(iter)
     results <- rbindlist(lapply(c(20, 30, 40, 50, 75, 100, 200, 300, 500, 700, 1000), get_widths_cal) )
