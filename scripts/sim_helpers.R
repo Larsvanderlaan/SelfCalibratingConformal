@@ -17,6 +17,8 @@ generate_data <- function(n, d = 5, shape = 3, b = 0.5, distr_shift = FALSE, a =
   #sigma_range <- c(0.05, 0.4)^2
   g <-  -log(0.5 + 0.5*X[,1]) / 4
   sigma <-  0.035 + b * ( abs(mu)^6 / 20 - 0.02) + a * g
+  print(c(a, b))
+  print(quantile(sigma))
   #plot(X, sqrt(sigma))
   #plot(mu, sqrt(sigma))f
   Y <- rnorm(n, mu, sigma)

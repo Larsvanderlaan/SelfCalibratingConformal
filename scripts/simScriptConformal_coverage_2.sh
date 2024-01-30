@@ -8,7 +8,7 @@ do
     do
     for shape in 1
       do
-      for a in 1
+      for a in 0.6
         do
         sbatch  --export=d=$d,lrnr_name=$lrnr_name,shape=$shape,b=0,a=$a,name="coverage" ~/conformal/scripts/simScriptConformal.sbatch
         done
