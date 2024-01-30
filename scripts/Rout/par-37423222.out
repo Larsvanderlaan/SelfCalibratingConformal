@@ -1,0 +1,13 @@
+LOADING R
+R LOADED
+[1] "/home/lvanderl/Rlibs2"                         
+[2] "/app/software/R/4.3.1-gfbf-2022b/lib/R/library"
+[1] "/home/lvanderl/sieveSims"
+[1] "HERE"
+[1] "~n~set.seed(12345)~n~dir_path~+~=~+~\"~\";~n~source(paste0(dir_path,~+~\"/conformal/scripts/R_setup.R\"));~n~source(paste0(dir_path,~+~\"/conformal/scripts/run_sims.R\"));~n~lrnr_name~+~<-~+~Sys.getenv(\"lrnr_name\")~n~d~+~<-~+~Sys.getenv(\"d\")~n~shape~+~<-~+~Sys.getenv(\"shape\")~n~b~+~<-~+~Sys.getenv(\"b\")~n~a~+~<-~+~Sys.getenv(\"a\")~n~name~+~<-~+~Sys.getenv(\"name\")~n~print(\"HERE\")~n~print(a)~n~print(b)~n~~n~lrnr_name~+~<-~+~as.character(lrnr_name)~n~d~+~<-~+~as.numeric(d)~n~shape~+~<-~+~as.numeric(shape)~n~b~+~<-~+~as.numeric(b)~n~a~+~<-~+~as.numeric(a)~n~name~+~<-~+~as.character(name)~n~~n~print(paste(lrnr_name,~+~d,~+~shape))~n~~n~if(lrnr_name~+~==~+~\"gam\")~+~{~n~~+~~+~lrnr~+~<-~+~lrnr_gam~n~}~+~else~+~if(lrnr_name~+~==~+~\"xg\")~+~{~n~~+~~+~lrnr~+~<-~+~lrnr_xg~n~}~+~else~+~if(lrnr_name~+~==~+~\"rf\")~+~{~n~~+~~+~lrnr~+~<-~+~Lrnr_ranger$new()~n~}~n~~n~n_train~+~<-~+~1000~n~alpha~+~<-~+~0.1~n~out~+~<-~+~run_sim_once(n_train~+~=~+~n_train,~+~lrnr~+~=~+~lrnr,~+~d~+~=~+~d,~+~alpha~+~=~+~alpha,~+~shape~+~=~+~shape,~+~~+~~+~b~+~=~+~b,~+~n_test~+~=~+~2500,~+~a~+~=~+~a)~n~fwrite(out,~+~file~+~=~+~paste0(\"~/conformal/results/sims_\",~+~name,~+~\"_\",~+~n_train,~+~\"_\",~+~lrnr_name,~+~\"_\",~+~d,~+~\"_\",~+~alpha,~+~\"_\",~+~shape,~+~\"_\",~+~b,~+~\"_\",~+~a,\".csv\"))~n~"
+[1] "0"
+[1] "gam 5 1"
+[1] "heu"
+          0%          25%          50%          75%         100% 
+8.941839e-05 3.438471e-02 6.897351e-02 1.130535e-01 1.725588e-01 
+[1] NA  0

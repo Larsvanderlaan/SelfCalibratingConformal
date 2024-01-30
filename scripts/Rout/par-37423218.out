@@ -1,0 +1,10 @@
+LOADING R
+R LOADED
+[1] "/home/lvanderl/Rlibs2"                         
+[2] "/app/software/R/4.3.1-gfbf-2022b/lib/R/library"
+[1] "/home/lvanderl/sieveSims"
+[1] "gam 3 1"
+[1] "heu"
+          0%          25%          50%          75%         100% 
+0.0001049974 0.0335503355 0.0705439436 0.1142938167 0.1725675235 
+[1] NA  0
