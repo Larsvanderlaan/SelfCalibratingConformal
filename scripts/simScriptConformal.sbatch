@@ -41,6 +41,6 @@ if(lrnr_name == "gam") {
 
 n_train <- 1000
 alpha <- 0.1
-out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape,   b = b, n_test = 2500)
-fwrite(out, file = paste0("~/conformal/results/sims_", name, "_", n_train, "_", lrnr_name, "_", d, "_", alpha, "_", shape, "_", b, ".csv"))
+out <- run_sim_once(n_train = n_train, lrnr = lrnr, d = d, alpha = alpha, shape = shape,   b = b, n_test = 2500, a = a)
+fwrite(out, file = paste0("~/conformal/results/sims_", name, "_", n_train, "_", lrnr_name, "_", d, "_", alpha, "_", shape, "_", b, "_", a,".csv"))
 '
