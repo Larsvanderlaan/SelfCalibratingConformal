@@ -6,7 +6,7 @@ for d in 3 5 20
 do
   for lrnr_name in "xg" "rf"
     do
-    for shape in 1 1.5 2 2.5 3
+    for shape in 1 1.25 1.5 1.75 2 2.25 2.5 2.75 3
       do
       for b in 0.6
         do

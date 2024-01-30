@@ -55,15 +55,14 @@ compute_calibration_error <- function(f, Y) {
   return(calibration_error)
 }
 
-run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, b = 0.5) {
+run_sim_once <- function(n_train, lrnr, d, alpha, shape, n_test = n_train, n_cal = n_train, b = 0.6, a = 0) {
 #Lrnr_xgboost$new(max_depth = max_depth)
   #lrnr <- Lrnr_gam$new()
-  data_list <- generate_data_splits(n_train, n_train, n_test, d = d, distr_shift = TRUE, shape = shape, b = b)
+  data_list <- generate_data_splits(n_train, n_cal, n_test, d = d, distr_shift = TRUE, shape = shape, b = b, a = a)
   data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
   X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
   Y_train <- data_train$Y; Y_cal <- data_cal$Y; Y_test <- data_test$Y
 
-  data_bench <- generate_data_splits(n_train, n_train, 100000, d = d, distr_shift = TRUE, shape = shape, b = b)$data_test
 
 
   # get predictor using learning algorithm specified by lrnr

@@ -29,20 +29,20 @@ out$method <- method_names[match(out$method, names(method_names))]
 out$method <- factor(out$method, levels = 
                      c("SC-CP (ours)", "Cond-CP" , "Uncond-CP", "HistCAL-CP (5 bins)", "Mondrian-CP", "Oracle")  )
 
-
-
+out[,  shape_error := cal_error[method == "Uncond-CP" & bin == "marginal"], by = shape]
  
-plt1 <- ggplot(out[out$bin == "marginal"], aes(x = shape, y = width, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(x = TeX("Distribution shift in training data ($\\kappa_{train}$)"), y = "Interval Width") +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank())) + 
+ 
+plt1 <- ggplot(out[out$bin == "marginal"], aes(x = shape_error, y = width, color = method)) + geom_point(aes(shape = method), size = 4)   + theme_bw() + labs(x = TeX("Calibration error in f( )"), y = "Interval Width") +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank())) + 
  theme(legend.text = element_text(size = 11), legend.key.size = unit(2, "lines"))
 
  
 plt1
-ggsave("plots/calibration_shift.pdf" , width = 7, height = 5)
+ggsave("plots/calibration_shift.pdf" , width = 6, height =4)
  
 
 
  
-plt2 <- ggplot(out[out$bin == "marginal"], aes(x = shape, y = coverage, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(x = TeX("Distribution shift in training data ($\\kappa_{train}$)"), y = TeX("Coverage ($\\alpha = 0.1$)")) +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank())) + 
+plt2 <- ggplot(out[out$bin == "marginal"], aes(x = shape, y = coverage, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(x = TeX("Calibration error in f()"),  y = TeX("Coverage ($\\alpha = 0.1$)")) +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank())) + 
  theme(legend.text = element_text(size = 11), legend.key.size = unit(2, "lines"))
 
  

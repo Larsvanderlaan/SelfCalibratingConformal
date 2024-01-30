@@ -4,7 +4,7 @@ library(sl3)
 library(mvtnorm)
 library(caret)
 
-generate_data <- function(n, d = 5, shape = 3, b = 0.5, distr_shift = FALSE,  ...) {
+generate_data <- function(n, d = 5, shape = 3, b = 0.5, distr_shift = FALSE, a = 0,  ...) {
   # covariates
   X <- as.matrix(replicate(d, runif(n, 0, 1)))
   if(distr_shift) {
@@ -13,12 +13,14 @@ generate_data <- function(n, d = 5, shape = 3, b = 0.5, distr_shift = FALSE,  ..
   colnames(X) <- paste0("X", 1:d)
   # biomarker mean and variance
 
-  mu <-    rowMeans(X + sin(4*X))
+  mu <-   rowMeans(X + sin(4*X))
   #sigma_range <- c(0.05, 0.4)^2
-  sigma <-  0.035 + b * ( abs(mu)^6 / 20 - 0.02)
+  g <- rowMeans(X + cos(4*X))
+  sigma <-  0.035 + b * ( abs(mu)^6 / 20 - 0.02) + a * ( abs(g)^6 / 20 - 0.02)
   #plot(X, sqrt(sigma))
   #plot(mu, sqrt(sigma))f
   Y <- rnorm(n, mu, sigma)
+
    #Y <- qs[findInterval(Y, qs, all.inside = TRUE)]
   #median(Y)
   #plot(mu, Y)

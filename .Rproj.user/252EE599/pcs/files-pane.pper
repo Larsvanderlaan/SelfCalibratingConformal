@@ -6,8 +6,8 @@
         },
         {
             "columnIndex": 2,
-            "ascending": false
+            "ascending": true
         }
     ],
-    "path": "~/repositories/conformal"
+    "path": "~/repositories/conformal/scripts"
 }

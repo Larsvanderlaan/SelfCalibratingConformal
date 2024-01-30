@@ -67,5 +67,7 @@ plt4 <- plot_curves(500)
 
 plt5 <- plot_curves(1000)
 
+plt6 <- plot_curves(2000)
+
 plt6 <- plot_curves(5000)
 

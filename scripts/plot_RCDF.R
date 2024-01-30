@@ -3,9 +3,10 @@
 # plots of RCDF of conformity scores
 ###########
 library(ggplot2)
-set.seed(123456)
+#set.seed(12345)
 d <- 5
-n_train <- n_test <- 1000
+n_train <- 1000
+n_test <- 1000
 shape <- 3
 b = 0.6
 alpha <- 0.1
@@ -13,6 +14,7 @@ library(sl3)
 
 
 get_scores_rcdf <- function(n_cal, lrnr, lrnr_name) {
+  set.seed(123456)
   data_list <- generate_data_splits(n_train, n_cal, n_test, d = d, distr_shift = TRUE, shape = shape, b = b)
   data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
   X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
@@ -21,9 +23,14 @@ get_scores_rcdf <- function(n_cal, lrnr, lrnr_name) {
   predictor <- train_predictor(X_train, Y_train, lrnr)
 
   f_cal <- predictor(X_cal)
+  plot(data_cal$mu, f_cal)
   f_test <- predictor(X_test)
   out <- conformal_calibrator(f_train = f_cal, Y_train = Y_cal, f_test = f_test, calibrator = iso_calibrator, alpha = alpha, num_bins_Y = 100)
+  preds_cal <- conformal_predict(out, f_test)
+  width_cal <- mean(preds_cal$upper - preds_cal$lower)
 
+  cf_preds_marginal <- do_conformal_marginal(X_cal, Y_cal, X_test, predictor, alpha)
+  width_uncal <- mean(cf_preds_marginal$width)
 
   data_bench <- generate_data_splits(n_train = 2, n_cal = 10000, 2, d = d, distr_shift = TRUE, shape = shape, b = b)$data_cal
   X_bench <- data_bench$X
@@ -31,7 +38,7 @@ get_scores_rcdf <- function(n_cal, lrnr, lrnr_name) {
   f_bench <- predictor(X_bench)
 
   f_bench_calibrated <- as.vector(unlist(out$prediction_point(f_bench, return_median = TRUE)))
-
+  plot(f_bench, f_bench_calibrated )
   rmse_uncal <- sqrt(mean((Y_bench - f_bench)^2))
   rmse_cal <- sqrt(mean((Y_bench - f_bench_calibrated)^2))
 
@@ -59,6 +66,10 @@ get_scores_rcdf <- function(n_cal, lrnr, lrnr_name) {
   df_uncal$calerror <- calerror_uncal
   df_cal$rmse <- rmse_cal
   df_uncal$rmse <- rmse_uncal
+  df_cal$width <- width_cal
+  df_uncal$width <- width_uncal
+  df_cal$orig_calerror <- calerror_uncal
+  df_uncal$orig_calerror <- calerror_uncal
 
   df <- rbind(df_cal, df_uncal)
   df$learner <-lrnr_name
@@ -102,36 +113,102 @@ plt <- ggplot(df, aes(x = scores, y = cdf, color = n, linetype = Status)) +
 plt
 ggsave("plots/plot_RCDF_scores.pdf", width = 6, height = 6)
 
+set.seed(12345)
+data_list <- generate_data_splits(n_train, n_cal=1000, n_test = 1000, d = d, distr_shift = TRUE, shape = shape, b = b)
+data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
+X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
+Y_train <- data_train$Y; Y_cal <- data_cal$Y; Y_test <- data_test$Y
+predictor <- train_predictor(X_train, Y_train, lrnr)
 
 
+width_data <- rbindlist(lapply(c(20,  50, 100, 200, 300, 700, 1000), function(n_cal){
+  set.seed(123456)
+  data_list <- generate_data_splits(n_train, n_cal, n_test, d = d, distr_shift = TRUE, shape = shape, b = b)
+  data_train <- data_list$data_train; data_cal <- data_list$data_cal; data_test <- data_list$data_test
+  X_train <- data_train$X; X_cal <- data_cal$X; X_test <- data_test$X
+  Y_train <- data_train$Y; Y_cal <- data_cal$Y; Y_test <- data_test$Y
+
+  X_cal <- X_cal[1:n_cal , , drop = FALSE]
+  Y_cal <- Y_cal[1:n_cal]
+  f_cal <- predictor(X_cal)
+  f_test <- predictor(X_test)
+  out <- conformal_calibrator(f_train = f_cal, Y_train = Y_cal, f_test = f_test, calibrator = iso_calibrator, alpha = alpha, num_bins_Y = 100)
 
 
+  scores_calibrated <- t(as.matrix(out$prediction_point(f_cal, return_score = TRUE, Y = Y_cal)))
+  scores_calibrated <- apply(scores_calibrated, 1, max)
+  scores_uncalibrated <- as.vector(abs(Y_cal - f_cal))
 
 
+  width_cal <- quantile(scores_calibrated, ceiling(c(0.8, 0.9, 0.95) * (n_cal + 1))/n_cal)
+  width_uncal <- quantile(scores_uncalibrated,ceiling(c(0.8, 0.9, 0.95) * (n_cal + 1))/n_cal)
 
-scores_gam <- get_scores_rcdf(1000, Lrnr_gam$new(), lrnr_name = "GAM")
 
-scores_ranger <- get_scores_rcdf(1000, Lrnr_ranger$new(), lrnr_name = "random forests")
-scores_xgboost <- get_scores_rcdf(1000, lrnr_xg, lrnr_name = "xgboost")
+  # f_cal <- predictor(X_cal)
+  # f_test <- predictor(X_test)
+  # out <- conformal_calibrator(f_train = f_cal, Y_train = Y_cal, f_test = f_test, calibrator = iso_calibrator, alpha = alpha, num_bins_Y = 100)
+  # preds_cal <- conformal_predict(out, f_test)
+  # width_cal <- mean(preds_cal$upper - preds_cal$lower)
+  # cf_preds_marginal <- do_conformal_marginal(X_cal, Y_cal, X_test, predictor, alpha)
+  # width_uncal <- mean(cf_preds_marginal$width)
 
-df <- rbind(scores_gam, scores_ranger, scores_xgboost)
-# Plotting
-plt <- ggplot(df, aes(x = scores, y = cdf, color = learner, linetype = Status)) +
+  out <- data.table(n = n_cal, width = c(width_cal, width_uncal), alph = rep(c(0.2, 0.1, 0.05), 2), Status = rep(c("Calibrated", "Uncalibrated"), each = 3))
+
+  return(out)
+}))
+
+
+plt <- ggplot(width_data[width_data$alpha=0.1], aes(x = n, y = width, color = alph, linetype = Status)) +
   geom_line(size = 0.8) +
-  scale_color_manual(values = c("GAM" = "#1f77b4",  # A brighter, more vivid blue
-                                "random forests" = "#d62728",  # A richer, more eye-catching red
-                                "xgboost" = "#2ca02c")) +  # A more vibrant shade of green
-labs(title = "Reverse Cumulative Distribution Function of Conformity Scores",
+  scale_color_manual(values = c("20" = "black", "50" = "#1f77b4",  # A brighter, more vivid blue
+                                "300" = "#d62728",  # A richer, more eye-catching red
+                                "1000" = "#2ca02c")) +  # A more vibrant shade of green
+  labs(title = "Reverse Cumulative Distribution Function of Conformity Scores",
        x = "Conformity score",
        y = "RCDF",
        color = "",
        linetype = "") + theme_bw() + ggtitle("") +
   theme(legend.position= c(0.75,0.6),  legend.key.size = unit(2, "lines"),
-      legend.background = element_blank())
+        legend.background = element_blank()) + facet_wrap(~n, labeller = as_labeller(appender,
+                                                                                     default = label_parsed) ) + theme(legend.key.size = unit(0.7, "cm"),
+                                                                                                                       legend.text = element_text(size = 9),  # Adjust text size here
+                                                                                                                       legend.title = element_text(size = 10), # Adjust title size here
+                                                                                                                       legend.position = "bottom",
+                                                                                                                       legend.direction = "horizontal",
+                                                                                                                       legend.margin = margin(0,0,0,0),
+                                                                                                                       legend.box.margin = margin(-10,-10,-10,-10))
+plt
 
-ggsave("plots/plot_RCDF_scores.pdf", width = 4.5, height = 3.8)
 
 
 
 
-
+#
+#
+#
+# scores_gam <- get_scores_rcdf(1000, Lrnr_gam$new(), lrnr_name = "GAM")
+#
+# scores_ranger <- get_scores_rcdf(1000, Lrnr_ranger$new(), lrnr_name = "random forests")
+# scores_xgboost <- get_scores_rcdf(1000, lrnr_xg, lrnr_name = "xgboost")
+#
+# df <- rbind(scores_gam, scores_ranger, scores_xgboost)
+# # Plotting
+# plt <- ggplot(df, aes(x = scores, y = cdf, color = learner, linetype = Status)) +
+#   geom_line(size = 0.8) +
+#   scale_color_manual(values = c("GAM" = "#1f77b4",  # A brighter, more vivid blue
+#                                 "random forests" = "#d62728",  # A richer, more eye-catching red
+#                                 "xgboost" = "#2ca02c")) +  # A more vibrant shade of green
+# labs(title = "Reverse Cumulative Distribution Function of Conformity Scores",
+#        x = "Conformity score",
+#        y = "RCDF",
+#        color = "",
+#        linetype = "") + theme_bw() + ggtitle("") +
+#   theme(legend.position= c(0.75,0.6),  legend.key.size = unit(2, "lines"),
+#       legend.background = element_blank())
+#
+# ggsave("plots/plot_RCDF_scores.pdf", width = 4.5, height = 3.8)
+#
+#
+#
+#
+#
