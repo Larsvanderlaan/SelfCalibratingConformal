@@ -15,8 +15,8 @@ generate_data <- function(n, d = 5, shape = 3, b = 0.5, distr_shift = FALSE, a =
 
   mu <-   rowMeans(X + sin(4*X))
   #sigma_range <- c(0.05, 0.4)^2
-  g <- rowMeans(X + cos(4*X))
-  sigma <-  0.035 + b * ( abs(mu)^6 / 20 - 0.02) + a * ( abs(g)^6 / 20 - 0.02)
+  g <-  -log(0.5 + 0.5*X[,1]) / 4
+  sigma <-  0.035 + b * ( abs(mu)^6 / 20 - 0.02) + a * g
   #plot(X, sqrt(sigma))
   #plot(mu, sqrt(sigma))f
   Y <- rnorm(n, mu, sigma)
