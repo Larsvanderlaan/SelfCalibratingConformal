@@ -63,7 +63,7 @@ get_widths_cal <- function(shape) {
   return(out)
 }
 
-results_all <- rbindlist(lapply(1:10, function(iter) {
+results_all <- rbindlist(lapply(1:1000, function(iter) {
   try({
     results <- rbindlist(lapply(c(1,1.25, 1.5, 1.75, 2,2.25,  2.5,2.75, 3, 3.5, 4, 4.5, 5), get_widths_cal) )
     results$iter <- iter
