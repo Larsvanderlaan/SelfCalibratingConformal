@@ -63,7 +63,7 @@ get_widths_cal <- function(n_cal) {
   return(out)
 }
 
-results_all <- lapply(1:1000, function(iter) {
+results_all <- lapply(1:100, function(iter) {
   results <- NULL
   try({
     print(iter)
@@ -73,7 +73,7 @@ results_all <- lapply(1:1000, function(iter) {
   return(results)
 })
 
-saveRDS(results_all, paste0(dir_path, "/conformal/results/calerror_2.rds"))
+saveRDS(results_all, paste0(dir_path, "/conformal/results/calerror_2_less.rds"))
 
 
 #, 30, 40, 50, 75, 100, 200, 300, 500

@@ -33,8 +33,8 @@ data_test <- data_list$data_test
 
 preds_oracle <- data.table(X = as.vector(data_test$X),
                            f = data_test$mu, 
-                           lower = qnorm(0.05, data_test$mu, data_test$sigma2),
-                           upper = qnorm(0.95, data_test$mu, data_test$sigma2),
+                           lower = qnorm(0.05, data_test$mu, data_test$sigma),
+                           upper = qnorm(0.95, data_test$mu, data_test$sigma),
                            method = "Oracle")
 
 
@@ -45,13 +45,17 @@ data$method <- factor(data$method, levels = c("SC-CP (ours)", "Cond-CP", "Uncond
 appender <- function(string) {
     TeX(paste("$n_{cal} = $", string)) 
 }
-
-
-plt <- ggplot(data, aes(x = X, color = method, linetype = method)) +
+preds_oracle <- rbindlist(lapply(sort(unique(data$n)), function(n) {
+  dat <- copy(preds_oracle)
+  dat$n <- n
+  dat
+}))
+data_all <- rbind(data[, c("n", "X", "f", "lower", "upper", "method"), with = FALSE], preds_oracle)
+plt <- ggplot(data_all, aes(x = X, color = method, linetype = method)) +
   geom_step(aes(y = lower), size = 0.8)  +
   geom_step(aes(y = upper), size = 0.8) +
-  geom_line(data = preds_oracle, aes(x = X, y = lower), color = "black", alpha = 1, linetype = "solid")  +
-  geom_line(data = preds_oracle, aes(x = X, y = upper), color = "black", alpha = 1, linetype = "solid") +
+ # geom_line(data = preds_oracle, aes(x = X, y = lower), color = "black", alpha = 1, linetype = "solid")  +
+#  geom_line(data = preds_oracle, aes(x = X, y = upper), color = "black", alpha = 1, linetype = "solid") +
   theme(legend.position="bottom") + theme_bw() + labs(x = "Covariate (X)", color = "", y = "Outcome (Y)") + facet_wrap(~ n, labeller = as_labeller(appender, 
                             default = label_parsed) ) +  labs(color  = "", linetype = "", shape = "")   + theme(legend.key.size = unit(1, "cm"), 
         legend.text = element_text(size = 12),  # Adjust text size here

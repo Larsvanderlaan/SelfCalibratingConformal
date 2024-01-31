@@ -63,7 +63,7 @@ get_widths_cal <- function(shape) {
   return(out)
 }
 
-results_all <- lapply(1:1000, function(iter) {
+results_all <- lapply(1:100, function(iter) {
   results <- NULL
   try({
     results <- rbindlist(lapply(c(1,1.25, 1.5, 1.75, 2,2.25,  2.5,2.75, 3, 3.5, 4, 4.5, 5), get_widths_cal) )
@@ -77,7 +77,7 @@ saveRDS(results_all, paste0(dir_path, "/conformal/results/calerror_1.rds"))
 
 results <- results_all[, .(width = mean(width), cal_error = mean(cal_error)), by = c("shape", "alpha", "Status")]
 
-
+fwrite(results, "plots/calerror1_less.csv")
 
 
 ggplot(results , aes(x = cal_error, y = width, color = as.factor(alpha), linetype = Status)) + geom_line()

@@ -7,11 +7,14 @@ date: '2024-01-28'
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-Maybe use the two plots of the blocks tomorrow, with RF as less calibration and GAM as mire
 
+
+
+## Experiment 1: SC-CP
 ```{r}
 library(data.table)
 library(ggplot2)
+library(latex2exp)
 out <- rbindlist(lapply(c(1, 1.5, 2, 2.5, 3), function(shape) {
   data <- fread(paste0("results/sims_calibration_1000_rf_5_0.1_", shape, "_0.6.csv"))
   data$shape <- shape
@@ -32,28 +35,69 @@ out$method <- factor(out$method, levels =
 out[,  shape_error := cal_error[method == "Uncond-CP" & bin == "marginal"], by = shape]
  
  
-plt1 <- ggplot(out[out$bin == "marginal"], aes(x = shape_error, y = width, color = method)) + geom_point(aes(shape = method), size = 4)   + theme_bw() + labs(x = TeX("Calibration error in f( )"), y = "Interval Width") +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank())) + 
+plt1 <- ggplot(out[out$bin == "marginal"], aes(x = shape_error, y = width, color = method)) + geom_point(aes(shape = method), size = 4)   + theme_bw() + labs(x = TeX("Calibration error in f( )"), y = "Interval Width ($\\alpha = 0.1$)") +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank())) + 
  theme(legend.text = element_text(size = 11), legend.key.size = unit(2, "lines"))
 
  
 plt1
 ggsave("plots/calibration_shift.pdf" , width = 6, height =4)
  
-
-
- 
-plt2 <- ggplot(out[out$bin == "marginal"], aes(x = shape, y = coverage, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(x = TeX("Calibration error in f()"),  y = TeX("Coverage ($\\alpha = 0.1$)")) +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank())) + 
- theme(legend.text = element_text(size = 11), legend.key.size = unit(2, "lines"))
-
- 
-plt2
-
-#combined_plot <- plt1 + plt2 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
- 
- 
-#ggsave("plots/calibration_shift.pdf" , width = 7, height = 5)
-
 ```
+
+
+## Experiment 2: calibration for scoring function
+```{r}
+library(latex2exp)
+
+results_1 <- rbindlist(readRDS("results/calerror_1.rds"))
+results_1 <- results_1[, .(width = mean(width), cal_error = mean(cal_error)), by = c("shape", "alpha", "Status")]
+results_1 <- results_1[, .(relative = width[Status=="Calibrated"] / width[Status=="Uncalibrated"]) , by = c("cal_error", "alpha")]
+ 
+
+
+
+results_2 <- readRDS("results/calerror_2.rds")
+results_2 <- results_2[, .(width = mean(width)), by = c("n", "alpha", "Status")]
+results_2 <- results_2[, .(relative = width[Status=="Calibrated"] / width[Status=="Uncalibrated"]) , by = c("n", "alpha")]
+
+ 
+results_1$alpha <- factor(results_1$alpha, levels = c(0.05, 0.1, 0.2))
+results_2$alpha <- factor(results_2$alpha, levels = c(0.05, 0.1, 0.2))
+ 
+
+library(latex2exp)
+ 
+plt1 <- ggplot(results_1 , aes(x = cal_error, y = relative, color = (alpha), linetype = (alpha))) + geom_line() +
+  theme_bw() + labs(y = TeX("Relative Width (cal/uncal)"), x = TeX("Calibration error of f ($\\n_{Cal} = 1000)"),
+                    color = "Sig. Level", linetype = "Sig. Level") +
+  geom_hline(yintercept = 1, color = "black", linetype = "dashed" , alpha = 0.5) + scale_y_continuous(limits = c(0.7, 1.2))  
+
+ 
+plt2 <- ggplot(results_2 , aes(x = n, y = relative, color = (alpha), linetype = (alpha))) + geom_line() +
+  theme_bw() + labs(y = TeX("Relative Width (cal/uncal)"), x = TeX("Calibration set size ($kappa_{train} = 3$)"), color = "Sig. Level", linetype = "Sig. Level") + scale_x_log10() +
+  geom_hline(yintercept = 1, color = "black", linetype = "dashed" , alpha = 0.5) + scale_y_continuous(limits = c(0.7, 1.2)) 
+
+
+library(patchwork)
+combined_plot <- (plt1 + plt2)  + plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") & theme(legend.position = "bottom") #+  labs(color = TeX("$\\alpha$"), linetype = TeX("$\\alpha$"))
+combined_plot
+print(combined_plot)
+
+ggsave("plots/calibration_shift_2.pdf", plot = combined_plot, width = 6, height = 4)
+# this plot is good
+
+
+ 
+```
+
+
+
+ 
+
+ 
+ 
+
+ 
 
 ## Experiment 2: good example
 
@@ -211,9 +255,9 @@ ggsave("plots/conditional_coverage_adverserial.pdf", plot = combined_plot, width
 
 
 
-plot1 <- plot1 + ggtitle("d=5")
-plot3 <- plot3 + ggtitle("d=20")
-plot5 <- plot5 + ggtitle("Adverserial (d=5)")
+plot1 <- plot1 + ggtitle("Setup A (d=5)")
+plot3 <- plot3 + ggtitle("Setup B (d=20)")
+plot5 <- plot5 + ggtitle("Setup C (adverserial, d=5)")
 combined_plot <- plot1 + plot2+ plot3+ plot4 + plot5 + plot6+ plot_layout(ncol =2, guides = "collect", axis_titles ="collect") & theme(legend.position = "bottom") 
 
 

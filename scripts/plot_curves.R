@@ -2,7 +2,7 @@
 
 
 
-plot_curves <- function(n, b = 0.5) {
+plot_curves <- function(n, b = 0.6) {
   library(ggplot2)
   alpha <- 0.1
   lrnr <- Lrnr_gam$new()
@@ -63,11 +63,7 @@ plt2 <- plot_curves(100)
 
 plt3 <- plot_curves(300)
 
-plt4 <- plot_curves(500)
 
 plt5 <- plot_curves(1000)
 
-plt6 <- plot_curves(2000)
-
-plt6 <- plot_curves(5000)
 
