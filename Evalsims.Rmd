@@ -68,22 +68,22 @@ results_2$alpha <- factor(results_2$alpha, levels = c(0.05, 0.1, 0.2))
 library(latex2exp)
  
 plt1 <- ggplot(results_1 , aes(x = cal_error, y = relative, color = (alpha), linetype = (alpha))) + geom_line() +
-  theme_bw() + labs(y = TeX("Relative Width (cal/uncal)"), x = TeX("Calibration error of f ($\\n_{Cal} = 1000)"),
-                    color = "Sig. Level", linetype = "Sig. Level") +
+  theme_bw() + labs(y = TeX("Relative Width (cal/uncal)"), x = TeX("Calibration error in f"),
+                    color = "Level", linetype = "Level") +
   geom_hline(yintercept = 1, color = "black", linetype = "dashed" , alpha = 0.5) + scale_y_continuous(limits = c(0.7, 1.2))  
 
  
 plt2 <- ggplot(results_2 , aes(x = n, y = relative, color = (alpha), linetype = (alpha))) + geom_line() +
-  theme_bw() + labs(y = TeX("Relative Width (cal/uncal)"), x = TeX("Calibration set size ($kappa_{train} = 3$)"), color = "Sig. Level", linetype = "Sig. Level") + scale_x_log10() +
+  theme_bw() + labs(y = TeX("Relative Width (cal/uncal)"), x = TeX("Calibration set size"), color = "Level", linetype = "Level") + scale_x_log10() +
   geom_hline(yintercept = 1, color = "black", linetype = "dashed" , alpha = 0.5) + scale_y_continuous(limits = c(0.7, 1.2)) 
 
 
 library(patchwork)
-combined_plot <- (plt1 + plt2)  + plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") & theme(legend.position = "bottom") #+  labs(color = TeX("$\\alpha$"), linetype = TeX("$\\alpha$"))
+combined_plot <- (plt1 + plt2)  + plot_layout(guides = "collect", axis_titles = "collect", axes = "collect") & theme(legend.position = "right") #+  labs(color = TeX("$\\alpha$"), linetype = TeX("$\\alpha$"))
 combined_plot
 print(combined_plot)
 
-ggsave("plots/calibration_shift_2.pdf", plot = combined_plot, width = 6, height = 4)
+ggsave("plots/calibration_shift_2.pdf", plot = combined_plot, width = 6, height = 3)
 # this plot is good
 
 
@@ -125,7 +125,7 @@ plot1 <- ggplot(out , aes(x = bin, y = coverage, color = method)) + geom_point(a
                                                        "Q.3",
                                                        "Q.4",
                                                        "Q.5",
-                                                       "Uncond."))  +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed") + geom_hline(yintercept = 0.9, alpha = 0.5, color = "red")
+                                                       "Marginal"))  +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed") + geom_hline(yintercept = 0.9, alpha = 0.5, color = "red")
 
 
 plot2 <- ggplot(out , aes(x = bin, y = width, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(y = "Interval Width", x = TeX("Quintiles of $\\sigma^2(X)$")) + scale_x_discrete(labels = c("Q.1", 
@@ -133,7 +133,7 @@ plot2 <- ggplot(out , aes(x = bin, y = width, color = method)) + geom_point(aes(
                                                        "Q.3",
                                                        "Q.4",
                                                        "Q.5",
-                                                       "Uncond."))   +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed")
+                                                       "Marginal"))   +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed")
 
 library(patchwork)
 combined_plot <- plot1 + plot2 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
@@ -172,7 +172,7 @@ plot3 <- ggplot(out , aes(x = bin, y = coverage, color = method)) + geom_point(a
                                                        "Q.3",
                                                        "Q.4",
                                                        "Q.5",
-                                                       "Uncond."))  +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed") + geom_hline(yintercept = 0.9, alpha = 0.5, color = "red")
+                                                       "Marginal"))  +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed") + geom_hline(yintercept = 0.9, alpha = 0.5, color = "red")
 
 
 plot4 <- ggplot(out , aes(x = bin, y = width, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(y = "Interval Width", x = TeX("Quintiles of $\\sigma^2(X)$")) + scale_x_discrete(labels = c("Q.1", 
@@ -180,7 +180,7 @@ plot4 <- ggplot(out , aes(x = bin, y = width, color = method)) + geom_point(aes(
                                                        "Q.3",
                                                        "Q.4",
                                                        "Q.5",
-                                                       "Uncond."))   +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed")
+                                                       "Marginal"))   +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed")
 
 library(patchwork)
 combined_plot <- plot3 + plot4 + plot_layout(guides = "collect") & theme(legend.position = "bottom")
@@ -228,7 +228,7 @@ plot5 <- ggplot(out , aes(x = bin, y = coverage, color = method)) + geom_point(a
                                                        "Q.3",
                                                        "Q.4",
                                                        "Q.5",
-                                                       "Uncond."))  +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed") + geom_hline(yintercept = 0.9, alpha = 0.5, color = "red")
+                                                       "Marginal"))  +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed") + geom_hline(yintercept = 0.9, alpha = 0.5, color = "red")
 
 
 plot6 <- ggplot(out , aes(x = bin, y = width, color = method)) + geom_point(aes(shape = method), size = 3)   + theme_bw() + labs(y = "Interval Width", x = TeX("Quintiles of $\\sigma^2(X)$")) + scale_x_discrete(labels = c("Q.1", 
@@ -236,7 +236,7 @@ plot6 <- ggplot(out , aes(x = bin, y = width, color = method)) + geom_point(aes(
                                                        "Q.3",
                                                        "Q.4",
                                                        "Q.5",
-                                                       "Uncond."))   +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed")
+                                                       "Marginal"))   +   guides(color = guide_legend(title = element_blank()), shape = guide_legend(title = element_blank()))  + geom_vline(xintercept = 5.5, alpha = 0.3, linetype = "dashed")
 
 library(patchwork)
 combined_plot <- plot5 + plot6 + plot_layout(guides = "collect") & theme(legend.position = "")

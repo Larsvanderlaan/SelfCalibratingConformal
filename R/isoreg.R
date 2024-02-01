@@ -5,7 +5,7 @@
 #'
 #' @param x A numeric vector or one-column matrix containing the predictor values.
 #' @param y A numeric vector containing the response variable.
-#' @param max_depth The maximum depth of the trees. Default is 15.
+#' @param max_depth The maximum depth of the trees. Default is 12.
 #' @param min_child_weight Minimum sum of instance weight (hessian) needed in a child.
 #'                         Default is 10.
 #'                         For equal weights, this is the minimal number of observations in each leaf node.
@@ -26,7 +26,7 @@
 #' @seealso \code{\link[xgboost::xgb.train]{xgb.train}}
 #' @import xgboost
 #' @export
-isoreg_with_xgboost <- function(x, y, max_depth = 12, min_child_weight = 20) {
+isoreg_with_xgboost <- function(x, y, max_depth = 12, min_child_weight = 10) {
   # Prepare data for XGBoost
   data <- xgboost::xgb.DMatrix(data = as.matrix(x), label = as.vector(y))
 

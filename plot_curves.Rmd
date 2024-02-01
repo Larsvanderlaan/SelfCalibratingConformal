@@ -15,7 +15,7 @@ library(data.table)
 library(ggplot2)
 library(latex2exp)
 data <- rbindlist(lapply(c( 50, 100, 300, 1000), function(n) {
-  data <- read.csv(paste0("plots/curves_", n, "_0.5.csv"))
+  data <- read.csv(paste0("plots/curves_", n, "_0.6.csv"))
   data$n <- n
   return(data)
 }))

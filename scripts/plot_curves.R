@@ -1,7 +1,7 @@
 
 
 
-
+set.seed(12345)
 plot_curves <- function(n, b = 0.6) {
   library(ggplot2)
   alpha <- 0.1
