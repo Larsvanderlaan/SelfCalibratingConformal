@@ -1,7 +1,7 @@
 
 
 #' @export
-iso_calibrator <- function(f, Y, max_depth = 12, min_child_weight = 5) {
+iso_calibrator <- function(f, Y, max_depth = 12, min_child_weight = 20) {
   isoreg_with_xgboost(f, Y, max_depth = max_depth, min_child_weight = min_child_weight)
 }
 
