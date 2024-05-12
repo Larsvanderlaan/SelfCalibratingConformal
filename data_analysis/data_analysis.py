@@ -10,6 +10,7 @@ import pandas as pd
 import math
 from data_analysis import data_analysis_utils
 import random
+import SelfCalibratedConformal
 
 random.seed(10)
 
@@ -153,16 +154,16 @@ df_transform, plot_sc_transform, plot_comparison_transform, cp_sc_transform = ru
 fig, axs = plot_comparison_no_transform
 #fig.set_size_inches(10, 10)
 #plt.tight_layout(rect=[0, 0.03, 1, 1.02])
-fig.savefig('comparison_poorcal.pdf')
+fig.savefig('data_analysis/comparison_poorcal.pdf')
 fig, axs = plot_comparison_transform
-fig.savefig('comparison_goodcal.pdf')
+fig.savefig('data_analysis/comparison_goodcal.pdf')
 
 fig, axs = plot_sc_no_transform
 #fig.set_size_inches(6, 6)
-fig.savefig('SCCP_poorcal.pdf')
+fig.savefig('data_analysis/SCCP_poorcal.pdf')
 fig, axs = plot_sc_transform
 #fig.set_size_inches(6, 6)
-fig.savefig('SCCP_goodcal.pdf')
+fig.savefig('data_analysis/SCCP_goodcal.pdf')
 
  
 

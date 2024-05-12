@@ -5,7 +5,9 @@ from python import calibrators
 from scipy.interpolate import UnivariateSpline
 from statsmodels.gam.smooth_basis import BSplines
 from statsmodels.gam.generalized_additive_model import GLMGam
-
+# Package imports
+import calibrators
+import utils
 
 class SelfCalibratedConformalPredictor:
     def __init__(self, predictor: callable, calibrator= calibrator_isotonic, 
