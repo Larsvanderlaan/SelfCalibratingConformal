@@ -1,4 +1,0 @@
-"0",""
-"0","print(plot(data_coverage$bins, data_coverage$coverage))"
-"1","NULL
-"

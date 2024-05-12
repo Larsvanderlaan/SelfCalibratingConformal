@@ -33,7 +33,7 @@ binning_calibrator <- function(f, Y, nbin = 10) {
 #' @param num_bins_Y Number of bins for discretization of outcomes to generate approximate prediction regions.
 #' @import data.table
 #' @export
-conformal_calibrator <- function(f_train, Y_train, f_test = f_train, calibrator = iso_calibrator, alpha = 0.1, num_bins_Y = 500, num_bins_f = num_bins_Y, ...) {
+conformal_calibrator <- function(f_train, Y_train, f_test = f_train, calibrator = iso_calibrator, alpha = 0.1, num_bins_Y = 200, num_bins_f = num_bins_Y, ...) {
   library(data.table)
 
   f_test_uniq <- sort(unique(f_test)) # store unique labels of test predictions. Why?

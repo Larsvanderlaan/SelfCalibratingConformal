@@ -11,7 +11,7 @@ isoreg_with_xgboost(x, y, max_depth = 12, min_child_weight = 20)
 
 \item{y}{A numeric vector containing the response variable.}
 
-\item{max_depth}{The maximum depth of the trees. Default is 15.}
+\item{max_depth}{The maximum depth of the trees. Default is 12.}
 
 \item{min_child_weight}{Minimum sum of instance weight (hessian) needed in a child.
 Default is 10.

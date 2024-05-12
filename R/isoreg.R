@@ -26,7 +26,7 @@
 #' @seealso \code{\link[xgboost::xgb.train]{xgb.train}}
 #' @import xgboost
 #' @export
-isoreg_with_xgboost <- function(x, y, max_depth = 12, min_child_weight = 10) {
+isoreg_with_xgboost <- function(x, y, max_depth = 12, min_child_weight = 20) {
   # Prepare data for XGBoost
   data <- xgboost::xgb.DMatrix(data = as.matrix(x), label = as.vector(y))
 
