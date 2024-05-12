@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: SelfCalibratedConformal
+Version: 0.3
+Summary: A Python implementation of Self-Calibrated Conformal Prediction
+Home-page: https://github.com/Larsvanderlaan/SelfCalibratedConformal
+Author: Lars van der Laan
+Author-email: vanderlaanlars@yahoo.com
+License: UNKNOWN
+Description: A Python implementation of Self-Calibrated Conformal Prediction
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
