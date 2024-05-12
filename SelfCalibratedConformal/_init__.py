@@ -1,1 +1,1 @@
-from SelfCalibratedConformalPredictor.py import calibrator_isotonic, SelfCalibratedConformalPredictor
+from SelfCalibratedConformal import *

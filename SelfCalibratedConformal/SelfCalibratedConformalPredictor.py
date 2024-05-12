@@ -1,27 +1,30 @@
 import numpy as np
 import pandas as pd
-from python import utils
-from python import calibrators
-from scipy.interpolate import UnivariateSpline
+from scipy.interpolate import UnivariateSpline, interp1d
 from statsmodels.gam.smooth_basis import BSplines
 from statsmodels.gam.generalized_additive_model import GLMGam
 # Package imports
-import calibrators
-import utils
+import matplotlib.pyplot as plt
+from SelfCalibratedConformal.calibrators import *
+from SelfCalibratedConformal.utils import *
+ 
 
 class SelfCalibratedConformalPredictor:
     def __init__(self, predictor: callable, calibrator= calibrator_isotonic, 
                  calibrator_params={'max_depth': 15, 'min_child_weight': 20},
                  algo_params = {'num_bin_predictor': 100, 'num_bin_y': 100, 'binning_method': "quantile"}):
         """
-        Initializes a SelfCalibratedConformal predictor.
+        Initializes a SelfCalibratedConformal predictor which estimates prediction intervals using
+        various calibration methods based on the provided predictor and calibration function.
 
-        :param predictor: Callable for making point predictions.
-        :param calibrator: Function to calibrate predictions, defaulting to isotonic calibration.
-        :param calibrator_params: Dictionary of parameters for the calibrator.
-        :param num_bin_predictor: Number of bins for the predictor value grid to approximate the algorithm.
-        :param num_bin_y: Number of bins for the y-value grid to approximate the algorithm. Linear interpolation is used to estimate values between grid points.
-        :param binning_method: Binning strategy, 'quantile' for equal-frequency bins or 'fixed' for equal-width bins.
+        Parameters:
+        predictor (callable): Function for making point predictions.
+        calibrator (callable): Calibration function to adjust predictor outputs, defaulting to isotonic calibration.
+        calibrator_params (dict): Parameters for the calibration function.
+        algo_params (dict): Algorithmic parameters including:
+            num_bin_predictor (int): Number of bins for predictor values for grid approximation.
+            num_bin_y (int): Number of bins for output values (y) for grid approximation.
+            binning_method (str): Binning strategy, either 'quantile' for equal-frequency bins or 'fixed' for equal-width bins.
         """
         self.predictor = predictor
         self.calibrator = calibrator
@@ -84,7 +87,7 @@ class SelfCalibratedConformalPredictor:
                 pred_calibrated = preds_augmented_calibrated[-1]
                 
                 level_set = [index for index, value in enumerate(preds_augmented_calibrated) if value == pred_calibrated]
-                conformity_scores = self.compute_conformity_scores(y_augmented[level_set], pred_calibrated, preds_augmented[level_set], scoring_method)
+                conformity_scores = self._compute_conformity_scores(y_augmented[level_set], pred_calibrated, preds_augmented[level_set], scoring_method)
                 
                 threshold = np.quantile(conformity_scores, 1 - alpha, method='inverted_cdf')
                 score = conformity_scores[-1]
@@ -118,7 +121,7 @@ class SelfCalibratedConformalPredictor:
   
         self.fit_info = fit_info_conformal
         
-    def compute_conformity_scores(self, y_values, calibrated_prediction, original_predictions, scoring_method):
+    def _compute_conformity_scores(self, y_values, calibrated_prediction, original_predictions, scoring_method):
         """
         Computes the conformity scores based on the specified scoring method.
 
@@ -144,72 +147,140 @@ class SelfCalibratedConformalPredictor:
         
     def predict_point(self, x: np.ndarray, calibrate = True, smooth = False):
         """
-        Outputs a calibrated point prediction for the given input derived from the Venn-Abers multi-prediction.
+        Generates a point prediction for given features, optionally using calibration.
+        
+        Args:
+            x (np.ndarray): Input features.
+            calibrate (bool): If True, apply calibration to the prediction. Defaults to True.
+            smooth (bool): If True, apply smoothing to the calibrated prediction. Defaults to False.
+        
+        Returns:
+            np.ndarray: Predicted values.
         """
         f = np.array(self.predictor(x))
         if calibrate:
-          return self.extrapolate(self.fit_info['prediction_uncal'], self.fit_info['prediction_cal'], f, smooth = smooth)
+          return self._extrapolate(self.fit_info['prediction_uncal'], self.fit_info['prediction_cal'], f, smooth = smooth)
         else:
          return f
 
     def predict_venn_abers(self, x: np.ndarray, smooth = False):
         """
-        Outputs the range of the Venn-Abers calibrated multi-prediction for the given input.
+        Provides a range of predictions (Venn-Abers intervals) for given features.
+        
+        Args:
+            x (np.ndarray): Input features.
+            smooth (bool): If True, apply smoothing to the prediction intervals. Defaults to False.
+        
+        Returns:
+            np.ndarray: Array containing lower and upper bounds of predictions.
         """
         f = np.array(self.predictor(x))
         f_grid = self.fit_info['prediction_uncal']
         bounds = [(row[0], row[1]) for row in self.fit_info['prediction_venn_abers']]
-        lower = self.extrapolate(f_grid, [b[0] for b in bounds], f, smooth = smooth)
-        upper = self.extrapolate(f_grid, [b[1] for b in bounds], f, smooth = smooth)
+        lower = self._extrapolate(f_grid, [b[0] for b in bounds], f, smooth = smooth)
+        upper = self._extrapolate(f_grid, [b[1] for b in bounds], f, smooth = smooth)
 
         return np.array([lower, upper]).T
       
     def predict_interval(self, x: np.ndarray, smooth = False):
         """
-        Outputs a self-calibrated prediction interval for the given input.
+        Outputs prediction intervals for the given input features.
+        
+        Args:
+            x (np.ndarray): Input features.
+            smooth (bool): If True, smoothing is applied to the intervals. Defaults to False.
+        
+        Returns:
+            np.ndarray: Array containing lower and upper bounds of the interval predictions.
         """
         f = np.array(self.predictor(x))
         #index_match = match_grid_value(f, self.fit_info['prediction_uncal'], return_index=True)
         #np.array(self.fit_info.loc[index_match, 'prediction_interval'])
         f_grid = self.fit_info['prediction_uncal']
         bounds = [(row[0], row[1]) for row in self.fit_info['prediction_interval']]
-        lower = self.extrapolate(f_grid, [b[0] for b in bounds], f, smooth = smooth)
-        upper = self.extrapolate(f_grid, [b[1] for b in bounds], f, smooth = smooth)
+        lower = self._extrapolate(f_grid, [b[0] for b in bounds], f, smooth = smooth)
+        upper = self._extrapolate(f_grid, [b[1] for b in bounds], f, smooth = smooth)
 
         return np.array([lower, upper]).T
 
-    def extrapolate(self, x_grid, y_grid, x_new, smooth=False):
+    def _extrapolate(self, x_grid, y_grid, x_new, smooth=False):
       """
-      Performs extrapolation (or smoothing) on a given set of x values based on provided data grids.
-    
-      Parameters:
-          x_grid (array-like): The grid of x-values for which y-values are known.
-          y_grid (array-like): The corresponding y-values for the x-values in x_grid.
-          x (array-like): The new x-values on which to perform extrapolation or smoothing.
-          smooth (bool, optional): If False, performs simple nearest-neighbor extrapolation.
-                                  If True, performs smoothing using cubic splines. Default is False.
-    
-      Returns:
-          np.array: The extrapolated or smoothed y-values corresponding to the x-values provided.
+        Performs extrapolation or smoothing on a given set of x values based on provided data grids.
+        
+        Args:
+            x_grid (array-like): The grid of x-values for which y-values are known.
+            y_grid (array-like): The corresponding y-values for the x-values in x_grid.
+            x_new (array-like): The new x-values on which to perform extrapolation or smoothing.
+            smooth (bool, optional): If True, performs smoothing using cubic splines.
+        
+        Returns:
+            np.ndarray: The extrapolated or smoothed y-values corresponding to x_new.
       """
       y_grid = np.array(y_grid)
       if not smooth:
-          interp = interp1d(x_grid, y_grid, kind='nearest', bounds_error=False, fill_value="extrapolate")
+          interp = interp1d(x_grid, y_grid, kind='nearest', bounds_error=False, fill_value="_extrapolate")
           preds = interp(x_new)
       else:
           # Ensure input arrays are numpy arrays and correctly shaped
           x_grid = np.array(x_grid).reshape(-1, 1)
           y_grid = np.array(y_grid)  # Ensure y_grid is a numpy array
           x_new = np.array(x_new).reshape(-1, 1)
-          bs = BSplines(x_grid, df=[15], degree=[3])
-          gam = GLMGam(y_grid,  smoother=bs).fit()
+          bs = BSplines(x_grid, df=[10], degree=[3])
+          gam = GLMGam(y_grid, smoother=bs)
+          gam.fit()
+          gam.select_penweight(criterion='gcv') 
+          gam_results = gam.fit()
           x_new = x_new[(x_new >= np.min(x_grid)) & (x_new <= np.max(x_grid))]
-          preds = gam.predict(bs.transform(x_new))
+          preds = gam_results.predict(bs.transform(x_new))
     
       return np.array(preds)
 
-      
+    def check_coverage(self, x_test, y_test, boolean=None, smooth=False):
+      """
+        Computes how frequently actual y_test values fall within the predicted intervals.
+        
+        Args:
+            x_test (array-like): Input features for the test dataset.
+            y_test (array-like): Actual target values for the test dataset.
+            boolean (array-like, optional): Specifies which indices are considered in calculations.
+            smooth (bool, optional): Whether to apply smoothing to interval predictions.
+        
+        Returns:
+            list: Coverage percentage and median interval width.
+      """
+      # Predict intervals using the model's method, possibly applying smoothing
+      intervals = self.predict_interval(x_test, smooth=smooth)
+    
+      # Create a list of indicators (1 or 0) where 1 indicates the actual y_test value
+      # falls within the predicted interval. Consider only entries specified by the
+      # `boolean` array if it is not None.
+      indicators = [
+          lower <= y_test[index] <= upper
+          for index, (lower, upper) in enumerate(intervals)
+          if boolean is None or boolean[index] == 1
+      ]
+
+      # Calculate the coverage as the mean of the indicators
+      coverage = np.mean(indicators)
+    
+      # Calculate the median width of the intervals that are included in the coverage calculation
+      width = np.median([upper - lower for index, (lower, upper) in enumerate(intervals)
+                       if boolean is None or boolean[index] == 1])
+
+      return [coverage, width]
+
     def plot(self, x = None, y = None, smooth = False):
+      """
+        Plots the predictions, actual outcomes, and prediction intervals for a given set of data.
+        
+        Args:
+            x (array-like, optional): Features data; if None, uses training data.
+            y (array-like, optional): Actual outcomes; if None, uses training outcomes.
+            smooth (bool): Whether to apply smoothing to the plots.
+        
+        Returns:
+            tuple: Matplotlib figure and axes containing the plot.
+      """
       if x is None:
         x = self.settings['x_train']
         y = self.settings['y_train']

@@ -8,17 +8,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import math
-from data_analysis import data_analysis_utils
 import random
-import SelfCalibratedConformal
+ 
 
-random.seed(10)
-
-path_to_directory = '~/repositories/conformal'
+path_to_directory = '~/repositories/SelfCalibratedConformal'
 full_path = os.path.expanduser(path_to_directory)
 os.chdir(full_path)
 
- 
+from data_analysis_utils import *
+from competitors import *
+from condconf import *
+random.seed(10)
 
 ################################################ 
 ####### Conformal Prediction ###################
