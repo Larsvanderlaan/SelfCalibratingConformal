@@ -9,15 +9,19 @@ import numpy as np
 import pandas as pd
 import math
 import random
+
+
+
  
 
-path_to_directory = '~/repositories/SelfCalibratedConformal'
+path_to_directory = '~/repositories/conformal-venn-abers'
 full_path = os.path.expanduser(path_to_directory)
 os.chdir(full_path)
 
-from data_analysis_utils import *
-from competitors import *
-from condconf import *
+from SelfCalibratingConformal.SelfCalibratingConformalPredictor import *
+from data_analysis.data_analysis_utils import *
+from data_analysis.competitors import *
+from data_analysis.condconf import *
 random.seed(10)
 
 ################################################ 
@@ -57,7 +61,7 @@ def run_regression_analysis(random_state=10, poor_calibration=False, cross_valid
     y_hat = predictor(X_test)
 
     # Compute intervals using SC-CP
-    cp_sc = SelfCalibratedConformalPredictor(predictor, calibrator_params={'max_depth': 15, 'min_child_weight': 20})
+    cp_sc = SelfCalibratingConformalPredictor(predictor, calibrator_params={'max_depth': 15, 'min_child_weight': 20})
     cp_sc.calibrate(X_cal, y_cal, scoring_method="calibrated", hist_shrinkage_num_bin=10)
     y_hat_sc = cp_sc.predict_point(X_test)
     y_hat_venn_abers = cp_sc.predict_venn_abers(X_test)

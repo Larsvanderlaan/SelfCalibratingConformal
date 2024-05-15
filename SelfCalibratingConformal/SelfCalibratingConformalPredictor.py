@@ -3,18 +3,18 @@ import pandas as pd
 from scipy.interpolate import UnivariateSpline, interp1d
 from statsmodels.gam.smooth_basis import BSplines
 from statsmodels.gam.generalized_additive_model import GLMGam
-# Package imports
+from statsmodels.nonparametric.kernel_regression import KernelReg
 import matplotlib.pyplot as plt
-from SelfCalibratedConformal.calibrators import *
-from SelfCalibratedConformal.utils import *
+# Package imports
+from SelfCalibratingConformal.calibrators import *
+from SelfCalibratingConformal.utils import *
  
-
-class SelfCalibratedConformalPredictor:
-    def __init__(self, predictor: callable, calibrator= calibrator_isotonic, 
-                 calibrator_params={'max_depth': 15, 'min_child_weight': 20},
-                 algo_params = {'num_bin_predictor': 100, 'num_bin_y': 100, 'binning_method': "quantile"}):
+class SelfCalibratingConformalPredictor:
+    def __init__(self, predictor: callable, calibrator = calibrator_isotonic, 
+                 calibrator_params = {'max_depth': 15, 'min_child_weight': 20},
+                 algo_params = {'num_bin_predictor': 200, 'num_bin_y': 100, 'binning_method': "quantile"}):
         """
-        Initializes a SelfCalibratedConformal predictor which estimates prediction intervals using
+        Initializes a SelfCalibratingConformal predictor which estimates prediction intervals using
         various calibration methods based on the provided predictor and calibration function.
 
         Parameters:
@@ -51,65 +51,88 @@ class SelfCalibratedConformalPredictor:
           - 'original': Uses absolute residual conformity scores centered around the original, uncalibrated model predictions.
         - hist_shrinkage_num_bin (int, optional): Specifies the number of bins used in histogram binning calibration. This parameter helps derive calibrated point predictions from the Venn-Abers multi-prediction by adjusting the midpoint towards a histogram-binned calibrated prediction. The degree of shrinkage is proportional to the width of the Venn-Abers multi-prediction, reflecting the uncertainty in calibrating the midpoint prediction.
         """
+        # Store calibration settings internally for reference.
         self.settings = {
             'x_train': x_train,
             'y_train': y_train,
             'scoring_method': scoring_method,
             'alpha': alpha
         }
+        
         if y_range is None:
             y_range = [min(y_train), max(y_train)]
 
+        # Discretize outcome using binning to approximate algorithm
         y_grid = make_grid(y_train, self.num_bin_y, y_range, binning_method=self.binning_method)
         y_interp = make_grid(y_train, 1000, y_range, binning_method="quantile")
-        
+       
+        # Discretize model predictions using binning to approximate algorithm
         preds_train = np.array(self.predictor(x_train))
         preds_grid = make_grid(preds_train, self.num_bin_predictor, binning_method=self.binning_method)
 
+        # initialize
         preds_grid_indices = list(range(len(preds_grid)))
-        preds_grid_calibrated = pd.Series([[] for _ in preds_grid], index=preds_grid_indices)
+        multipreds_venn_abers_grid = pd.Series([[] for _ in preds_grid], index=preds_grid_indices)
         predictions_interval = pd.Series([[] for _ in preds_grid], index=preds_grid_indices)
 
-        # Precompute augmented datasets for each grid value of predictor and target
+        # Pre-compute augmented datasets (combining calibration data with imputed test point) over grid of predictions and imputed outcomes for test point
         list_preds_augmented = [np.hstack([preds_train, pred]) for pred in preds_grid]
         list_y_augmented = [np.hstack([y_train, y_val]) for y_val in y_grid]
 
-        for index_f, pred in enumerate(preds_grid):
-            preds_augmented = list_preds_augmented[index_f]
-            preds_calibrated = np.zeros(len(y_grid))
+        for index_pred, pred in enumerate(preds_grid):
+            # Loop over grid of (uncalibrated) point predictions for test points
+           
+            preds_augmented = list_preds_augmented[index_pred]
+            multipred_venn_abers = np.zeros(len(y_grid))
             thresholds = np.zeros(len(y_grid))
-            scores = np.zeros(len(y_grid))
-
+            test_scores = np.zeros(len(y_grid))
+            
             for index_y, y_val in enumerate(y_grid):
+                # Loop over grid of possible imputed outcomes for test point
+                
                 y_augmented = list_y_augmented[index_y]
+                
+                # calibrate predictor on augmented dataset, using isotonic regression by default.
                 calibrator = self.calibrator(f=preds_augmented, y=y_augmented, **self.calibrator_params)
                 preds_augmented_calibrated = calibrator(preds_augmented)
+                
+                # get calibrated prediction for test point
                 pred_calibrated = preds_augmented_calibrated[-1]
                 
+                # Compute 1-alpha empirical quantile of conformity scores in same level set as the calibrated prediction for the test point.
                 level_set = [index for index, value in enumerate(preds_augmented_calibrated) if value == pred_calibrated]
                 conformity_scores = self._compute_conformity_scores(y_augmented[level_set], pred_calibrated, preds_augmented[level_set], scoring_method)
-                
+                # threshold for inclusion in interval
                 threshold = np.quantile(conformity_scores, 1 - alpha, method='inverted_cdf')
-                score = conformity_scores[-1]
+                # conformity score of test point
+                test_score = conformity_scores[-1]
                 
-                scores[index_y] = score
+                test_scores[index_y] = test_score
                 thresholds[index_y] = threshold
-                preds_calibrated[index_y] = pred_calibrated
-
-            preds_grid_calibrated[index_f] = preds_calibrated
-            scores_interp = np.interp(y_interp, y_grid, scores)
+                multipred_venn_abers[index_y] = pred_calibrated
+            
+            # Store Venn-Abers multi-prediction
+            multipreds_venn_abers_grid[index_pred] = multipred_venn_abers
+            
+            # Use linear interpolation to impute values of 'score' and 'threshold' for y_vals not in grid.
+            test_scores_interp = np.interp(y_interp, y_grid, test_scores)
             thresholds_interp = np.interp(y_interp, y_grid, thresholds)
-            prediction_set = [y for y, score, threshold in zip(y_interp, scores_interp, thresholds_interp) if score <= threshold]
-            predictions_interval[index_f] = [min(prediction_set), max(prediction_set)]
+            
+            # Define prediction set as imputed outcomes whose score lies below the threshold, and convert set to interval
+            prediction_set = [y for y, score, threshold in zip(y_interp, test_scores_interp, thresholds_interp) if score <= threshold]
+            predictions_interval[index_pred] = [min(prediction_set), max(prediction_set)]
 
 
-        # Build data frame with all results
+        # compute baseline/reference calibrated prediction obtained using histogram binning
         baseline_prediction = calibrator_histogram(preds_train, y_train, num_bin = hist_shrinkage_num_bin)(preds_grid)
+        # Derive calibrated point prediction from Venn-Abers multi-prediction by shrinking midpoint of multi-prediction towards reference prediction proportional to width of multi-prediction.
         y_max, y_min = max(y_train), min(y_train)
         predictions_point = [(max(value) + min(value)) / 2 + (max(value) - min(value)) / (y_max - y_min) * 
-                             (baseline_prediction[index] - (max(value) + min(value)) / 2) for index, value in enumerate(preds_grid_calibrated)]
-        predictions_venn_abers = [[min(value), max(value)] for value in preds_grid_calibrated]
-
+                             (baseline_prediction[index] - (max(value) + min(value)) / 2) for index, value in enumerate(multipreds_venn_abers_grid)]
+        # Extract minimum and maximum of the Venn-Abers multi-prediction
+        predictions_venn_abers = [[min(value), max(value)] for value in multipreds_venn_abers_grid]
+        
+         # Build data frame with all results
         fit_info_conformal = pd.DataFrame({
             "prediction_uncal": pd.Series(preds_grid, index=preds_grid_indices),
             "prediction_cal": pd.Series(predictions_point),
@@ -208,30 +231,35 @@ class SelfCalibratedConformalPredictor:
         Performs extrapolation or smoothing on a given set of x values based on provided data grids.
         
         Args:
-            x_grid (array-like): The grid of x-values for which y-values are known.
+            x_grid (array-like): The grid of x-values (1D) for which y-values are known.
             y_grid (array-like): The corresponding y-values for the x-values in x_grid.
             x_new (array-like): The new x-values on which to perform extrapolation or smoothing.
-            smooth (bool, optional): If True, performs smoothing using cubic splines.
+            smooth (bool, optional): If True, performs smoothing using locally linear kernel regression. 
+            Otherwise, nearest neighbor interpolation is performed.
         
         Returns:
             np.ndarray: The extrapolated or smoothed y-values corresponding to x_new.
       """
       y_grid = np.array(y_grid)
       if not smooth:
-          interp = interp1d(x_grid, y_grid, kind='nearest', bounds_error=False, fill_value="_extrapolate")
+          interp = interp1d(x_grid, y_grid, kind='nearest', bounds_error=False, fill_value="extrapolate")
           preds = interp(x_new)
       else:
           # Ensure input arrays are numpy arrays and correctly shaped
           x_grid = np.array(x_grid).reshape(-1, 1)
           y_grid = np.array(y_grid)  # Ensure y_grid is a numpy array
           x_new = np.array(x_new).reshape(-1, 1)
-          bs = BSplines(x_grid, df=[10], degree=[3])
-          gam = GLMGam(y_grid, smoother=bs)
-          gam.fit()
-          gam.select_penweight(criterion='gcv') 
-          gam_results = gam.fit()
-          x_new = x_new[(x_new >= np.min(x_grid)) & (x_new <= np.max(x_grid))]
-          preds = gam_results.predict(bs.transform(x_new))
+          smoother = KernelReg(y_grid, x_grid, var_type='c')
+          smoother.fit()
+          preds, std_dev = smoother.fit(x_new)
+          # bs = BSplines(x_grid, df=[15], degree=[3])
+          # #arg_smoothing {'df': [20], 'degree': [1]}
+          # gam = GLMGam(y_grid, smoother=bs)
+          # gam.fit()
+          # gam.select_penweight(criterion='aic') 
+          # gam_results = gam.fit()
+          # x_new = x_new[(x_new >= np.min(x_grid)) & (x_new <= np.max(x_grid))]
+          # preds = gam_results.predict(bs.transform(x_new))
     
       return np.array(preds)
 
@@ -297,12 +325,13 @@ class SelfCalibratedConformalPredictor:
       venn_upper = np.array([max(va) for va in venn_abers])
   
       # Define color map for different plot elements
+      good_colors = plt.get_cmap('tab10').colors
       colors = {
         'Original': 'grey',
         'Outcome': 'purple',
         'Calibrated': 'black',
-        'Venn-Abers': 'red',
-        'Interval': 'blue'
+        'Venn-Abers': good_colors[3],
+        'Interval': good_colors[0]
       }
 
       # Sort predictions and apply the same order to all arrays
@@ -313,19 +342,19 @@ class SelfCalibratedConformalPredictor:
       s_venn_upper = venn_upper[sorted_indices]
       s_interval_lower = interval_lower[sorted_indices]
       s_interval_upper = interval_upper[sorted_indices]
-
+       
       fig, ax = plt.subplots(figsize=(8, 6))
  
       # Plot Venn Abers intervals
       ax.fill_between(s_pred, s_interval_lower, s_interval_upper, color=colors['Interval'], alpha=0.1)
       ax.plot(s_pred, s_interval_lower, marker='None', linestyle='-', color=colors['Interval'], label='Prediction Interval', alpha=0.3)
       ax.plot(s_pred, s_interval_upper, marker='None', linestyle='-', color=colors['Interval'], alpha=0.3)
-      ax.fill_between(s_pred, s_venn_lower, s_venn_upper, color=colors['Venn-Abers'], alpha=0.3, label='Venn-Abers Multi-prediction')
+      ax.fill_between(s_pred, s_venn_lower, s_venn_upper, color=colors['Venn-Abers'], alpha=0.3, label='Venn-Abers Multi-Prediction')
       ax.plot(s_pred, s_pred_cal, marker='None', linestyle='-', color=colors['Calibrated'], label='Calibrated Prediction')
       ax.plot(s_pred, s_pred, marker='None', linestyle='dashed', color=colors['Original'], label='Original Prediction')
       if y is not None:
         s_outcome = y[sorted_indices]
-        ax.plot(s_pred, s_outcome, marker='o', linestyle='None', color=colors['Outcome'], label='Outcome', markersize=3, alpha=0.1)
+        ax.plot(s_pred, s_outcome, marker='o', linestyle='None', color=colors['Outcome'], label='Outcome', markersize=3, alpha=0.2)
        
       # Configure legend
       handles, labels = ax.get_legend_handles_labels()

@@ -1,6 +1,7 @@
 import numpy as np
 import xgboost as xgb
-from SelfCalibratedConformal.utils import make_grid, match_grid_value
+from SelfCalibratingConformal.utils import *
+
 
 def calibrator_isotonic(f: np.ndarray, y: np.ndarray, max_depth=20, min_child_weight=20):
     """

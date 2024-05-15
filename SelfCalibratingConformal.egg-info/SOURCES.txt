@@ -1,0 +1,7 @@
+README.md
+setup.py
+SelfCalibratingConformal.egg-info/PKG-INFO
+SelfCalibratingConformal.egg-info/SOURCES.txt
+SelfCalibratingConformal.egg-info/dependency_links.txt
+SelfCalibratingConformal.egg-info/requires.txt
+SelfCalibratingConformal.egg-info/top_level.txt

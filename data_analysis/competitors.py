@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import math
 from scipy.interpolate import interp1d
+from SelfCalibratingConformal.calibrators import *
+from SelfCalibratingConformal.utils import *
 
 class MondrianCP:
   def __init__(self, predictor : callable, num_bins = 20, binning_method = "quantile"):
