@@ -1,0 +1,13 @@
+\begin{tabular}{lllllll}
+\toprule
+Method & Coverage (A=0) & Coverage (A=1) & Average Width (A=0) & Average Width (A=1) & Cal. Error (A=0) & Cal. Error (A=1) \\
+\midrule
+Marginal & 0.861 & 0.949 & 0.321 & 0.321 & -0.0153 & 0.00739 \\
+CQR (marginal) & 0.888 & 0.915 & 0.333 & 0.227 & -0.0346 & -0.00193 \\
+Mondrian (5 bins) & 0.852 & 0.875 & 0.293 & 0.188 & -0.0153 & 0.00739 \\
+Mondrian (10 bins) & 0.906 & 0.903 & 0.367 & 0.201 & -0.0153 & 0.00739 \\
+Mondrian (97 bins) & 0.821 & 0.858 & 0.366 & 0.214 & -0.0153 & 0.00739 \\
+Kernel & 0.888 & 0.881 & 0.347 & 0.185 & -0.0153 & 0.00739 \\
+SC-CP & 0.901 & 0.892 & 0.359 & 0.191 & -0.00977 & 0.00804 \\
+\bottomrule
+\end{tabular}

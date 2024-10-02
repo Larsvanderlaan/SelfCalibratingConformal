@@ -1,0 +1,2 @@
+Download CQR datasets from https://github.com/yromano/cqr/tree/master/datasets into this folder.
+Also, get the MEPS-21 data, by running the scripts and following the instructions in https://github.com/yromano/cqr/tree/master/get_meps_data.

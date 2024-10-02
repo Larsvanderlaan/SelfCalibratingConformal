@@ -119,7 +119,11 @@ def run_regression_analysis(random_state=10, poor_calibration=False, cross_valid
     methods = [intervals_uncond, intervals_mondrian_5, intervals_mondrian_10, intervals_mondrian_opt, intervals_kernel, intervals_sc]
 
     for method, name in zip(methods, names):
-        coverage_data = calculate_coverage_in_bins(X_test[:, -1], method, y_test)
+        binary_var = X_test[:, -1]
+        if not np.all(np.isin(binary_var, [0, 1])):
+            binary_var = 1*(binary_var >= np.median(binary_var))
+            
+        coverage_data = calculate_coverage_in_bins(binary_var, method, y_test)
         subgroup_indicator = [x[0] for x in coverage_data]
         coverage_0 = [x[2] for i, x in enumerate(coverage_data) if subgroup_indicator[i] == 0]
         coverage_1 = [x[2] for i, x in enumerate(coverage_data) if subgroup_indicator[i] == 1]
