@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='SelfCalibratingConformal',
-    version='0.66',
+    version='1.0',
     packages=find_packages(),
     description='A Python implementation of Self-Calibrating Conformal Prediction',
     long_description='A Python implementation of Self-Calibrating Conformal Prediction',

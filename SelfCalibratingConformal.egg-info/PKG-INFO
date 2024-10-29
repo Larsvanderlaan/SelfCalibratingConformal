@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: SelfCalibratingConformal
-Version: 0.66
+Version: 1.0
 Summary: A Python implementation of Self-Calibrating Conformal Prediction
 Home-page: https://github.com/Larsvanderlaan/SelfCalibratingConformal
 Author: Lars van der Laan
@@ -10,5 +10,11 @@ Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: scipy
+Requires-Dist: statsmodels
+Requires-Dist: matplotlib
+Requires-Dist: xgboost
 
 A Python implementation of Self-Calibrating Conformal Prediction
