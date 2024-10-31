@@ -17,10 +17,10 @@ In machine learning, model calibration and predictive inference are essential fo
 
 ## Example
 
-Example code can be found in the vignette.jnb file.
+Example code demonstrating the use of **Self-Calibrating Conformal Prediction** can be found in the `vignette.ipynb` file. This notebook includes code to perform model calibration, generate prediction intervals, and evaluate model coverage.
 
 ```{python}
-# See vignette.jnb for loading data
+# See vignette.ipynb for loading data
 
 # Fit an XGBoost model (or any predictive model)
 params = {
