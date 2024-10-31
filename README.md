@@ -7,6 +7,5 @@ This repository provides a Python implementation of **Self-Calibrating Conformal
 In machine learning, model calibration and predictive inference are essential for producing reliable predictions and quantifying uncertainty to support decision-making. Recognizing the complementary roles of point and interval predictions, we introduce Self-Calibrating Conformal Prediction, a method that combines Venn-Abers calibration and conformal prediction to deliver calibrated point predictions alongside prediction intervals with finite-sample validity conditional on these predictions. To achieve this, we extend the original Venn-Abers procedure from binary classification to regression. Our theoretical framework supports analyzing conformal prediction methods that involve calibrating model predictions and subsequently constructing conditionally valid prediction intervals on the same data, where the conditioning set or conformity scores may depend on the calibrated predictions. Real-data experiments show that our method improves interval efficiency through model calibration and offers a practical alternative to feature-conditional validity.
 
 
-
-
-Note Self-Calibrating Conformal Prediction was previously termed Self-Consistent Conformal Prediction.
+## Citation
+van der Laan, L., & Alaa, A. M. (2024). Self-Consistent Conformal Prediction. arXiv preprint arXiv:2402.07307.
