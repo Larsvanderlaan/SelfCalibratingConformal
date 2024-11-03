@@ -1,6 +1,6 @@
 # Self-Calibrating Conformal Prediction: Providing Model Calibration and Predictive Inference
 
-This repository provides a Python implementation of **Self-Calibrating Conformal Prediction** (previously termed *Self-Consistent Conformal Prediction*), associated with the [NeurIPS 2024 conference paper](https://openreview.net/pdf?id=BJ6HkT7qIk). It also contains code to reproduce the experiments from the paper.
+This repository provides a Python implementation of **Self-Calibrating Conformal Prediction** (previously termed *Self-Consistent Conformal Prediction*), associated with the [NeurIPS 2024 conference paper](https://arxiv.org/abs/2402.07307). It also contains code to reproduce the experiments from the paper.
 
 
 ## Installation
@@ -57,4 +57,16 @@ coverage, width = conformal_predictor.check_coverage(X_test, y_test)
 
 
 ## Citation
-van der Laan, L., & Alaa, A. M. (2024). Self-Consistent Conformal Prediction. arXiv preprint arXiv:2402.07307.
+van der Laan, L., & Alaa, A. M. (2024). Self-Calibrating Conformal Prediction. arXiv preprint arXiv:2402.07307.
+
+
+
+@misc{vanderlaan2024selfcalibratingconformalprediction,
+      title={Self-Calibrating Conformal Prediction}, 
+      author={Lars van der Laan and Ahmed M. Alaa},
+      year={2024},
+      eprint={2402.07307},
+      archivePrefix={arXiv},
+      primaryClass={stat.ML},
+      url={https://arxiv.org/abs/2402.07307}, 
+}
