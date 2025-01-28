@@ -1,6 +1,6 @@
-Metadata-Version: 2.1
-Name: SelfCalibratingConformal
-Version: 1.0
+Metadata-Version: 2.2
+Name: selfcalibratingconformal
+Version: 1.11
 Summary: A Python implementation of Self-Calibrating Conformal Prediction
 Home-page: https://github.com/Larsvanderlaan/SelfCalibratingConformal
 Author: Lars van der Laan
@@ -16,5 +16,14 @@ Requires-Dist: scipy
 Requires-Dist: statsmodels
 Requires-Dist: matplotlib
 Requires-Dist: xgboost
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
 
 A Python implementation of Self-Calibrating Conformal Prediction

@@ -6,8 +6,8 @@ from statsmodels.gam.generalized_additive_model import GLMGam
 from statsmodels.nonparametric.kernel_regression import KernelReg
 import matplotlib.pyplot as plt
 # Package imports
-from SelfCalibratingConformal.calibrators import *
-from SelfCalibratingConformal.utils import *
+from selfcalibratingconformal.calibrators import *
+from selfcalibratingconformal.utils import *
  
 class SelfCalibratingConformalPredictor:
     def __init__(self, predictor: callable, calibrator = calibrator_isotonic, 
