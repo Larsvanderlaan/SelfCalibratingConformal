@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "selfcalibratingconformal"
+version = "1.12.0"
+description = "Modernized Venn-Abers calibration and conformal prediction for regression and quantile scores."
+readme = "README.md"
+requires-python = ">=3.9,<3.13"
+license = "MIT"
+authors = [
+  { name = "Lars van der Laan", email = "vanderlaanlars@yahoo.com" }
+]
+keywords = [
+  "conformal-prediction",
+  "calibration",
+  "venn-abers",
+  "uncertainty-quantification",
+  "quantile-regression"
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "matplotlib>=3.7",
+  "numpy>=1.24",
+  "pandas>=1.5",
+]
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2",
+  "jupyter>=1.1",
+  "nbconvert>=7.16",
+  "nbformat>=5.10",
+  "pytest>=8.2",
+  "pytest-cov>=5.0",
+]
+docs = [
+  "mkdocs>=1.6",
+  "mkdocs-material>=9.5",
+]
+examples = [
+  "xgboost>=2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Larsvanderlaan/SelfCalibratingConformal"
+Documentation = "https://larsvanderlaan.github.io/SelfCalibratingConformal/"
+Repository = "https://github.com/Larsvanderlaan/SelfCalibratingConformal"
+Issues = "https://github.com/Larsvanderlaan/SelfCalibratingConformal/issues"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["selfcalibratingconformal*"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "--cov=selfcalibratingconformal --cov-report=term-missing --cov-report=xml"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["selfcalibratingconformal"]
+omit = [
+  "selfcalibratingconformal/SelfCalibratingConformalPredictor.py",
+]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true

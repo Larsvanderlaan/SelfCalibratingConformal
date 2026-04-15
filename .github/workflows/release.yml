@@ -1,0 +1,32 @@
+name: Release Assets
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  release-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install build and docs dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,docs]"
+      - name: Build distributions and docs
+        run: |
+          python -m build
+          mkdocs build
+          tar -czf docs-site.tar.gz site
+      - name: Attach release artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*
+            docs-site.tar.gz

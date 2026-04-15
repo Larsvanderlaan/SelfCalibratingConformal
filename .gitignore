@@ -6,3 +6,13 @@ depreciated/*
 depreciated
 data_analysis/meps*
 cqr
+.DS_Store
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+site/
+.coverage
+coverage.xml
