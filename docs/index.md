@@ -22,9 +22,9 @@ hide:
 
     <div class="hero-grid">
       <section class="hero-copy">
-        <p class="landing-eyebrow">Calibrated Regression and Conformal Prediction</p>
+        <p class="landing-eyebrow">selfcalibratingconformal</p>
         <div class="hero-head">
-          <h1>Self-Calibrating Conformal for calibrated regression and conformal intervals</h1>
+          <h1>Calibrated regression and conformal intervals for black-box models</h1>
           <div class="hero-art">
             <img
               src="./assets/selfcalibratingconformal-badge-mark.svg"
@@ -130,45 +130,69 @@ hide:
   <section class="landing-section" id="workflows">
     <div class="section-heading">
       <p class="landing-eyebrow">Workflows</p>
-      <h2>Two tight paths, depending on what your model gives you</h2>
+      <h2>Choose the workflow that matches your upstream model</h2>
       <p>
-        The decision is simple: start from a point predictor if your model estimates the response
-        directly, or from a score-quantile predictor if your workflow is built around conformity
-        scores.
+        Click through the package entrypoints for the main use case, core inputs, and the shape of
+        the resulting intervals.
       </p>
     </div>
 
-    <div class="workflow-grid">
-      <article class="workflow-card">
-        <p class="mini-label">When to use it</p>
-        <h3><code>SelfCalibratingConformalPredictor</code></h3>
-        <p>
-          Choose this when you want the shortest route from a regression model for <code>y</code>
-          to calibrated predictions and intervals.
+    <div class="method-explorer" data-module="workflow-explorer">
+      <div class="method-tabs" role="tablist" aria-label="Package workflows">
+        <button class="tab-button is-active" type="button" data-workflow="regression">Regression workflow</button>
+        <button class="tab-button" type="button" data-workflow="quantile">Quantile-score workflow</button>
+      </div>
+
+      <div class="method-panel">
+        <div class="panel-banner">
+          <span class="badge" data-workflow-badge>Default starting point</span>
+          <h3 data-workflow-title><code>SelfCalibratingConformalPredictor</code></h3>
+        </div>
+        <p class="method-summary" data-workflow-summary>
+          Start here when you have a point predictor for <code>y</code> and want calibrated
+          predictions together with intervals induced by that calibrated scale.
         </p>
-        <pre class="landing-code"><code>from selfcalibratingconformal import SelfCalibratingConformalPredictor
+
+        <div class="method-visual-card">
+          <div class="method-visual-copy">
+            <span class="curve-kicker">When to use it</span>
+            <p data-workflow-visual-note>
+              Best for the shortest path from a fitted regression model to calibrated predictions,
+              Venn-Abers style multi-predictions, and interval outputs.
+            </p>
+          </div>
+          <div class="workflow-schematic" data-workflow-schematic="regression">
+            <div class="workflow-chip">predictor</div>
+            <div class="workflow-arrow" aria-hidden="true"></div>
+            <div class="workflow-chip workflow-chip-accent">calibration map</div>
+            <div class="workflow-arrow" aria-hidden="true"></div>
+            <div class="workflow-chip workflow-chip-warm">intervals</div>
+          </div>
+        </div>
+
+        <div class="argument-grid argument-grid-two">
+          <article class="argument-card">
+            <h3 data-workflow-input-title>Core inputs</h3>
+            <p data-workflow-input-copy>
+              A predictor for <code>y</code>, a calibration split, and the target miscoverage
+              level <code>alpha</code>.
+            </p>
+          </article>
+          <article class="argument-card">
+            <h3 data-workflow-output-title>What you get</h3>
+            <p data-workflow-output-copy>
+              Calibrated point predictions, Venn-Abers style prediction sets, intervals, and
+              empirical coverage summaries.
+            </p>
+          </article>
+        </div>
+
+        <pre class="landing-code" data-workflow-code><code>from selfcalibratingconformal import SelfCalibratingConformalPredictor
 
 model = SelfCalibratingConformalPredictor(predictor)
 model.fit(X_cal, y_cal, alpha=0.1)
 intervals = model.predict_interval(X_test)</code></pre>
-      </article>
-
-      <article class="workflow-card">
-        <p class="mini-label">When to use it</p>
-        <h3><code>VennAbersQuantileConformalPredictor</code></h3>
-        <p>
-          Choose this when your workflow estimates a conformity-score quantile and you want
-          calibrated thresholds that translate into prediction intervals.
-        </p>
-        <pre class="landing-code"><code>from selfcalibratingconformal import VennAbersQuantileConformalPredictor
-
-cp = VennAbersQuantileConformalPredictor(
-    score_quantile_predictor=score_model,
-    center_predictor=center_model,
-    alpha=0.1,
-)
-cp.fit(X_cal, y_cal)</code></pre>
-      </article>
+      </div>
     </div>
   </section>
 
