@@ -36,9 +36,9 @@ hide:
         </div>
         <p class="landing-lede">
           <code>selfcalibratingconformal</code> brings post-hoc calibration and conformal
-          prediction to black-box regression models. Choose one of two routes: calibrate a point
-          prediction, or calibrate a conformity-score threshold. In both, interval width adapts
-          across data-adaptive isotonic bins.
+          prediction to black-box regression models. Start from any predictor, calibrate either
+          the response or a conformity-score threshold, and return calibrated predictions and
+          adaptive intervals whose width changes across data-adaptive isotonic bins.
         </p>
         <div class="landing-actions">
           <a class="landing-button landing-button-primary" href="#quickstart">Quickstart</a>
@@ -51,8 +51,8 @@ hide:
           </a>
         </div>
         <ul class="hero-pills">
-          <li>Point-prediction and score-threshold workflows</li>
-          <li>Adaptive intervals across isotonic bins</li>
+          <li>Post-hoc calibration around black-box predictors</li>
+          <li>Regression and quantile-score conformal workflows</li>
           <li>Backward-compatible API with typed configs</li>
         </ul>
       </section>
@@ -63,15 +63,15 @@ hide:
           <div class="stat-grid">
             <div class="stat-item">
               <strong>Core use case</strong>
-              <span>Wrap an existing regression model to improve calibration and intervals.</span>
+              <span>Calibrate predictions from an existing regression model without retraining it.</span>
             </div>
             <div class="stat-item">
               <strong>Two entrypoints</strong>
-              <span>Calibrate predicted responses or score thresholds.</span>
+              <span>Choose between direct regression calibration and a conformity-score quantile workflow.</span>
             </div>
             <div class="stat-item">
               <strong>Outputs</strong>
-              <span>Return calibrated predictions, intervals, and diagnostics.</span>
+              <span>Return calibrated predictions, Venn-Abers style sets, intervals, and coverage diagnostics.</span>
             </div>
           </div>
         </div>
@@ -92,9 +92,9 @@ hide:
       <p class="landing-eyebrow">Overview</p>
       <h2>What the package is for</h2>
       <p>
-        Use the package when you already have a regression model and need better calibration and
-        intervals. It adds post-hoc calibration and conformal inference without changing the
-        underlying model.
+        Use the package when you already have a useful regression model but need better
+        calibration and uncertainty quantification. It wraps the fitted learner with post-hoc
+        calibration and conformal logic, so the original model can remain a black box.
       </p>
     </div>
 
@@ -103,19 +103,19 @@ hide:
         <p class="mini-label">Self-calibrating conformal</p>
         <h3>Calibrate the predicted response, then build an interval around it</h3>
         <p>
-          This workflow starts with a point prediction for <code>y</code>. It learns a monotone
-          correction on a calibration set, then builds adaptive intervals from the calibrated
-          prediction. Width varies across data-adaptive isotonic bins.
+          Start here when you have a point predictor for <code>y</code>. The method learns a
+          monotone correction on a calibration set, then builds adaptive intervals from the
+          calibrated prediction. Width varies across data-adaptive isotonic bins.
         </p>
       </article>
       <article class="landing-card">
         <p class="mini-label">Quantile workflow</p>
         <h3>Predict how large the error can be, then calibrate that threshold</h3>
         <p>
-          This workflow starts with a model for the <code>(1 - alpha)</code> quantile of a
-          conformity score. The package calibrates that threshold, then includes outcomes whose
-          scores fall below the calibrated cutoff. Width varies across data-adaptive isotonic bins
-          of the calibrated quantile.
+          Use this path when your model predicts the <code>(1 - alpha)</code> quantile of a
+          conformity score. The package calibrates that threshold, then forms intervals from the
+          calibrated cutoff. Width varies across data-adaptive isotonic bins of the calibrated
+          quantile.
         </p>
       </article>
       <article class="landing-card">
@@ -123,7 +123,7 @@ hide:
         <h3>Measure how compatible a candidate outcome is with the input</h3>
         <p>
           A conformity score is small when a candidate outcome looks plausible and large when it
-          does not. The default score is <code>|y - mu(x)|</code>, the absolute distance from the
+          does not. By default it is <code>|y - mu(x)|</code>, the absolute distance from the
           center prediction.
         </p>
       </article>
@@ -135,8 +135,8 @@ hide:
       <p class="landing-eyebrow">Workflows</p>
       <h2>Choose the workflow that matches your upstream model</h2>
       <p>
-        Use the regression path for point predictors and the quantile path for score-threshold
-        models.
+        Start from a point predictor if your model estimates the response directly, or from a
+        score-quantile predictor if your workflow is built around conformity scores.
       </p>
     </div>
 
@@ -152,15 +152,16 @@ hide:
           <h3 data-workflow-title><code>SelfCalibratingConformalPredictor</code></h3>
         </div>
         <p class="method-summary" data-workflow-summary>
-          Start here if you have a point predictor for <code>y</code> and want calibrated
-          predictions and intervals.
+          Start here when you have a point predictor for <code>y</code> and want calibrated
+          predictions together with intervals induced by that calibrated scale.
         </p>
 
         <div class="method-visual-card">
           <div class="method-visual-copy">
             <span class="curve-kicker">When to use it</span>
             <p data-workflow-visual-note>
-              Best when you want to wrap a fitted regression model.
+              Best when you want the shortest path from a fitted regression model to calibrated
+              predictions and intervals.
             </p>
           </div>
           <div class="workflow-schematic" data-workflow-schematic="regression">
@@ -183,7 +184,8 @@ hide:
           <article class="argument-card">
             <h3 data-workflow-output-title>What you get</h3>
             <p data-workflow-output-copy>
-              Calibrated point predictions, prediction sets, intervals, and coverage summaries.
+              Calibrated point predictions, Venn-Abers style prediction sets, adaptive intervals,
+              and coverage summaries.
             </p>
           </article>
         </div>
@@ -202,8 +204,9 @@ intervals = model.predict_interval(X_test)</code></pre>
       <p class="landing-eyebrow">Why Calibration</p>
       <h2>Predict, calibrate, then form the interval</h2>
       <p>
-        Predict a value or threshold, calibrate it on held-out data, then build the interval.
-        Width adapts across data-adaptive isotonic bins.
+        The model provides a raw prediction or score threshold, calibration adjusts that quantity
+        on held-out data, and the interval is built from the calibrated result. Width then adapts
+        across data-adaptive isotonic bins.
       </p>
     </div>
 
@@ -211,19 +214,19 @@ intervals = model.predict_interval(X_test)</code></pre>
       <article class="process-step">
         <p class="process-label">Step 1</p>
         <h3>Predict</h3>
-        <p>Fit or supply a model that outputs a prediction or score threshold.</p>
+        <p>Start from a black-box model that outputs either a response prediction or a score threshold.</p>
       </article>
       <div class="process-connector" aria-hidden="true"></div>
       <article class="process-step process-step-accent">
         <p class="process-label">Step 2</p>
         <h3>Calibrate</h3>
-        <p>Use a calibration set to learn a monotone correction.</p>
+        <p>Use a calibration set to learn a monotone correction on the right empirical scale.</p>
       </article>
       <div class="process-connector" aria-hidden="true"></div>
       <article class="process-step process-step-warm">
         <p class="process-label">Step 3</p>
         <h3>Form intervals</h3>
-        <p>Build the interval from the calibrated output and check coverage.</p>
+        <p>Build the interval from the calibrated output and check coverage on held-out data.</p>
       </article>
     </div>
 
@@ -233,8 +236,8 @@ intervals = model.predict_interval(X_test)</code></pre>
         <h3>How the self-calibrating path makes an interval</h3>
         <p>
           It calibrates the point prediction and then uses residual-based conformity scores to set
-          interval width around the calibrated center. Width varies across data-adaptive isotonic
-          bins.
+          interval width around the calibrated center. The result is an adaptive interval whose
+          width varies across data-adaptive isotonic bins.
         </p>
       </article>
       <article class="landing-card">
@@ -243,8 +246,8 @@ intervals = model.predict_interval(X_test)</code></pre>
         <p>
           It predicts a threshold for the conformity score, calibrates that threshold, and includes
           outcomes whose scores stay below the calibrated cutoff. With the default absolute-residual
-          score, this gives a symmetric adaptive interval around the center prediction. Width varies
-          across data-adaptive isotonic bins of the calibrated quantile.
+          score, this gives a symmetric adaptive interval around the center prediction. Width
+          varies across data-adaptive isotonic bins of the calibrated quantile.
         </p>
       </article>
     </div>
@@ -268,7 +271,8 @@ intervals = model.predict_interval(X_test)</code></pre>
       <p class="landing-eyebrow">Quickstart</p>
       <h2>A compact regression workflow</h2>
       <p>
-        The example below fits the regression workflow and returns calibrated intervals.
+        The example below fits the regression workflow on a calibration split and returns
+        calibrated intervals on a test set.
       </p>
     </div>
     <div class="single-code-card">
@@ -293,7 +297,7 @@ coverage, width = model.check_coverage(X_test, y_test)</code></pre>
       <p class="landing-eyebrow">Resources</p>
       <h2>Documentation and papers</h2>
       <p>
-        Use these links for notebooks, docs, and the main papers.
+        Use these links for notebooks, API documentation, and the papers behind the two workflows.
       </p>
     </div>
 
@@ -301,13 +305,13 @@ coverage, width = model.check_coverage(X_test, y_test)</code></pre>
       <article class="resource-card">
         <p class="mini-label">Paper PDF</p>
         <h3>Self-Calibrating Conformal Prediction</h3>
-        <p>Main paper for the self-calibrating conformal prediction workflow.</p>
+        <p>Main paper for the self-calibrating conformal workflow.</p>
         <a href="https://proceedings.neurips.cc/paper_files/paper/2024/file/c1c49aba08e6c90f2b1f85751f497a2f-Paper-Conference.pdf">Open PDF</a>
       </article>
       <article class="resource-card">
         <p class="mini-label">Paper PDF</p>
         <h3>Generalized Venn and Venn-Abers Calibration</h3>
-        <p>Companion paper covering generalized Venn and Venn-Abers calibration.</p>
+        <p>Companion paper on generalized Venn and Venn-Abers calibration.</p>
         <a href="https://openreview.net/pdf?id=kl2SA1N03E">Open PDF</a>
       </article>
       <article class="resource-card">

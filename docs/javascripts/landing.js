@@ -13,15 +13,15 @@ document.addEventListener("DOMContentLoaded", () => {
       badge: "Point-prediction path",
       title: "<code>SelfCalibratingConformalPredictor</code>",
       summary:
-        "Use this when you already have a point predictor for <code>y</code>. The package calibrates it, then builds intervals around the calibrated center.",
+        "Use this when you already have a point predictor for <code>y</code>. The package calibrates that prediction and then forms adaptive intervals around the calibrated center.",
       visualNote:
-        "Start from a fitted predictor, calibrate it, then build intervals.",
+        "Start from a fitted predictor, correct its scale on a calibration set, and then compute intervals from the calibrated output.",
       inputTitle: "Core inputs",
       inputCopy:
         "A predictor for <code>y</code>, a calibration split, and the target miscoverage level <code>alpha</code>.",
       outputTitle: "Outputs",
       outputCopy:
-        "Calibrated point predictions, intervals, and coverage summaries.",
+        "Calibrated point predictions, Venn-Abers style prediction sets, adaptive intervals, and coverage summaries.",
       code:
         "from selfcalibratingconformal import SelfCalibratingConformalPredictor\n\nmodel = SelfCalibratingConformalPredictor(predictor)\nmodel.fit(X_cal, y_cal, alpha=0.1)\nintervals = model.predict_interval(X_test)",
       schematic:
@@ -31,15 +31,15 @@ document.addEventListener("DOMContentLoaded", () => {
       badge: "Score-threshold path",
       title: "<code>VennAbersQuantileConformalPredictor</code>",
       summary:
-        "Use this when your workflow predicts the <code>(1 - alpha)</code> quantile of a conformity score. The package calibrates that threshold and uses it to form intervals.",
+        "Use this when your workflow predicts the <code>(1 - alpha)</code> quantile of a conformity score. The package calibrates that threshold and uses it to form adaptive intervals.",
       visualNote:
-        "Use this route when the model predicts score thresholds rather than responses.",
+        "Use this route when the model is built around score thresholds rather than direct predictions for the response.",
       inputTitle: "Core inputs",
       inputCopy:
         "A score-quantile predictor, an optional center predictor, a calibration split, and the target level <code>alpha</code>.",
       outputTitle: "Outputs",
       outputCopy:
-        "Calibrated score thresholds, intervals, and threshold diagnostics.",
+        "Calibrated score thresholds, adaptive intervals, and threshold diagnostics.",
       code:
         "from selfcalibratingconformal import VennAbersQuantileConformalPredictor\n\ncp = VennAbersQuantileConformalPredictor(\n    score_quantile_predictor=score_model,\n    center_predictor=center_model,\n    alpha=0.1,\n)\ncp.fit(X_cal, y_cal)",
       schematic:
