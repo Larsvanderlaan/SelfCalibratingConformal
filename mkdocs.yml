@@ -2,6 +2,7 @@ site_name: Self-Calibrating Conformal
 site_url: https://larsvanderlaan.github.io/SelfCalibratingConformal/
 theme:
   name: material
+  font: false
   palette:
     primary: teal
     accent: amber
@@ -9,6 +10,10 @@ nav:
   - Home: index.md
   - API: api.md
   - Guides: guides.md
+extra_css:
+  - stylesheets/landing.css
+extra_javascript:
+  - javascripts/landing.js
 markdown_extensions:
   - admonition
   - toc:

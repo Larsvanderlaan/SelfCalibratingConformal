@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Self-Calibrating Conformal badge</title>
+  <desc id="desc">A circular badge with calibration curves and a shaded prediction interval band.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff7eb"/>
+      <stop offset="100%" stop-color="#e5f4ee"/>
+    </linearGradient>
+    <linearGradient id="band" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c98b48" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#177d70" stop-opacity="0.3"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="24" stdDeviation="26" flood-color="#244149" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" rx="240" fill="none"/>
+  <circle cx="512" cy="512" r="404" fill="url(#bg)" filter="url(#shadow)"/>
+  <circle cx="512" cy="512" r="404" fill="none" stroke="#ffffff" stroke-opacity="0.9" stroke-width="10"/>
+  <circle cx="512" cy="512" r="392" fill="none" stroke="#17323b" stroke-opacity="0.08" stroke-width="2"/>
+
+  <path d="M292 668 C360 620, 424 572, 512 526 C598 480, 676 438, 740 392" fill="none" stroke="#17323b" stroke-opacity="0.15" stroke-width="16" stroke-linecap="round"/>
+  <path d="M292 616 C368 594, 430 546, 512 500 C592 454, 662 432, 740 356 L740 458 C662 520, 590 544, 512 588 C432 634, 366 688, 292 720 Z" fill="url(#band)"/>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M286 692 L286 336" stroke="#17323b" stroke-opacity="0.22" stroke-width="10"/>
+    <path d="M286 692 L760 692" stroke="#17323b" stroke-opacity="0.22" stroke-width="10"/>
+    <path d="M322 642 C382 622, 438 584, 500 528 C560 474, 642 430, 728 360" stroke="#c98b48" stroke-width="24"/>
+    <path d="M322 616 C382 592, 438 560, 500 516 C566 470, 646 424, 728 368" stroke="#177d70" stroke-width="24"/>
+    <path d="M324 552 C376 510, 430 500, 494 486 C566 470, 642 426, 724 346" stroke="#17323b" stroke-opacity="0.18" stroke-width="14" stroke-dasharray="18 24"/>
+  </g>
+
+  <g fill="#17323b" fill-opacity="0.7" font-family="Space Grotesk, Avenir Next, sans-serif" font-size="40" font-weight="700" letter-spacing="4">
+    <text x="512" y="820" text-anchor="middle">SELF-CALIBRATING</text>
+    <text x="512" y="868" text-anchor="middle">CONFORMAL</text>
+  </g>
+</svg>
