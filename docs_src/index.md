@@ -55,8 +55,8 @@ Use `VennAbersQuantileConformalPredictor` when your workflow predicts the `(1 - 
 
 ## Documentation
 
-- [API](./api/)
-- [Guides](./guides/)
+- [API](api.md)
+- [Guides](guides.md)
 - [Regression quickstart notebook](https://github.com/Larsvanderlaan/SelfCalibratingConformal/blob/master/quickstart_regression.ipynb)
 - [Quantile quickstart notebook](https://github.com/Larsvanderlaan/SelfCalibratingConformal/blob/master/quickstart_quantile_cp.ipynb)
 - [Advanced customization notebook](https://github.com/Larsvanderlaan/SelfCalibratingConformal/blob/master/advanced_customization.ipynb)
