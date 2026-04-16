@@ -341,6 +341,9 @@ body.is-landing .md-content__inner::before {
 .resource-card h3,
 .process-step h3 {
   margin: 0 0 10px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .section-heading h2 {
@@ -393,6 +396,9 @@ body.is-landing .md-content__inner::before {
 
 .argument-card h3 {
   margin: 0 0 8px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .argument-card p {
@@ -448,6 +454,19 @@ body.is-landing .md-content__inner::before {
 .panel-banner h3 {
   margin: 0;
   font-size: clamp(1.55rem, 2.5vw, 1.9rem);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.landing-card h3 code,
+.resource-card h3 code,
+.argument-card h3 code,
+.panel-banner h3 code,
+.section-heading h2 code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .badge {
