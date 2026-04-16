@@ -133,8 +133,8 @@ body.is-landing .md-content__inner::before {
 
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(350px, 0.85fr);
-  gap: 26px;
+  grid-template-columns: minmax(0, 1.34fr) minmax(320px, 0.78fr);
+  gap: 22px;
   margin-top: 22px;
   align-items: stretch;
 }
@@ -162,37 +162,39 @@ body.is-landing .md-content__inner::before {
 
 .hero-head {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) clamp(176px, 18vw, 220px);
-  gap: clamp(16px, 2.6vw, 26px);
-  align-items: center;
-  margin-bottom: 12px;
+  grid-template-columns: minmax(0, 1fr) clamp(128px, 13vw, 168px);
+  gap: clamp(14px, 2vw, 22px);
+  align-items: start;
+  margin-bottom: 14px;
 }
 
 .hero-copy h1 {
   margin: 0;
-  max-width: 12ch;
-  font-size: clamp(2.7rem, 5vw, 4.5rem);
-  line-height: 0.96;
+  max-width: none;
+  font-size: clamp(3.05rem, 4.65vw, 5rem);
+  line-height: 0.94;
+  text-wrap: balance;
 }
 
 .hero-art {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-top: 8px;
 }
 
 .hero-art img {
   display: block;
-  width: min(100%, 220px);
+  width: min(100%, 164px);
   height: auto;
   filter: drop-shadow(0 16px 30px rgba(41, 65, 73, 0.12));
 }
 
 .landing-lede {
   margin: 0;
-  max-width: 64ch;
-  font-size: 1.08rem;
-  line-height: 1.72;
+  max-width: 58ch;
+  font-size: 1.04rem;
+  line-height: 1.68;
   color: var(--landing-muted);
 }
 
@@ -316,7 +318,7 @@ body.is-landing .md-content__inner::before {
 
 .landing-section {
   margin-top: 26px;
-  padding: 30px;
+  padding: 28px;
   background: var(--landing-surface);
   border: 1px solid rgba(255, 255, 255, 0.58);
   border-radius: var(--landing-radius);
@@ -403,7 +405,7 @@ body.is-landing .md-content__inner::before {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .tab-button {
@@ -429,7 +431,7 @@ body.is-landing .md-content__inner::before {
 }
 
 .method-panel {
-  padding: 22px;
+  padding: 18px;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow: var(--landing-shadow);
@@ -445,7 +447,7 @@ body.is-landing .md-content__inner::before {
 
 .panel-banner h3 {
   margin: 0;
-  font-size: clamp(1.7rem, 3vw, 2rem);
+  font-size: clamp(1.55rem, 2.5vw, 1.9rem);
 }
 
 .badge {
@@ -458,19 +460,19 @@ body.is-landing .md-content__inner::before {
 }
 
 .method-summary {
-  margin: 14px 0 20px;
+  margin: 12px 0 16px;
   color: var(--landing-muted);
-  font-size: 1.04rem;
-  line-height: 1.75;
+  font-size: 1rem;
+  line-height: 1.68;
 }
 
 .method-visual-card {
   display: grid;
-  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: minmax(210px, 0.76fr) minmax(0, 1fr);
+  gap: 16px;
   align-items: center;
-  margin: 0 0 22px;
-  padding: 18px;
+  margin: 0 0 16px;
+  padding: 16px;
   border-radius: 24px;
   border: 1px solid var(--landing-line);
   background:
@@ -500,12 +502,12 @@ body.is-landing .md-content__inner::before {
   justify-content: center;
   gap: 12px;
   flex-wrap: nowrap;
-  min-height: 140px;
+  min-height: 110px;
 }
 
 .workflow-chip {
-  min-width: 110px;
-  padding: 18px 16px;
+  min-width: 104px;
+  padding: 15px 14px;
   border-radius: 22px;
   text-align: center;
   font-weight: 700;
@@ -523,7 +525,7 @@ body.is-landing .md-content__inner::before {
 }
 
 .workflow-arrow {
-  width: 34px;
+  width: 28px;
   height: 2px;
   background: linear-gradient(90deg, rgba(23, 125, 112, 0.24), rgba(203, 138, 66, 0.48));
   position: relative;
@@ -591,6 +593,10 @@ body.is-landing .md-content__inner::before {
   font-weight: 700;
 }
 
+[data-workflow-code] {
+  margin-top: 0;
+}
+
 .reference-list {
   margin: 0;
   padding-left: 20px;
@@ -622,12 +628,20 @@ body.is-landing .md-content__inner::before {
     grid-template-columns: 1fr;
   }
 
+  .hero-grid {
+    gap: 18px;
+  }
+
   .method-visual-card {
     grid-template-columns: 1fr;
   }
 
   .workflow-schematic {
     flex-wrap: wrap;
+  }
+
+  .hero-head {
+    grid-template-columns: minmax(0, 1fr) 144px;
   }
 
   .process-connector {
@@ -644,12 +658,8 @@ body.is-landing .md-content__inner::before {
     transform: rotate(135deg);
   }
 
-  .hero-head {
-    grid-template-columns: 1fr;
-  }
-
   .hero-copy h1 {
-    max-width: 14ch;
+    max-width: none;
   }
 }
 
@@ -686,5 +696,15 @@ body.is-landing .md-content__inner::before {
 
   .workflow-chip {
     width: 100%;
+  }
+
+  .hero-head {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .hero-art {
+    justify-content: flex-start;
+    padding-top: 0;
   }
 }

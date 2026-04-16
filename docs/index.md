@@ -36,9 +36,9 @@ hide:
         </div>
         <p class="landing-lede">
           <code>selfcalibratingconformal</code> brings post-hoc calibration and conformal
-          prediction to black-box regression models. Start from any predictor, calibrate it with
-          Venn-Abers style machinery, and return calibrated predictions or intervals through a
-          compact Python interface.
+          prediction to black-box regression models. It supports two routes: calibrate a point
+          prediction directly, or calibrate a predicted threshold for a conformity score and use
+          that threshold to form an interval.
         </p>
         <div class="landing-actions">
           <a class="landing-button landing-button-primary" href="#quickstart">Quickstart</a>
@@ -51,8 +51,8 @@ hide:
           </a>
         </div>
         <ul class="hero-pills">
-          <li>Post-hoc calibration around black-box predictors</li>
-          <li>Regression and quantile-score conformal workflows</li>
+          <li>Point-prediction and score-threshold workflows</li>
+          <li>Intervals built from calibrated outputs</li>
           <li>Backward-compatible API with typed configs</li>
         </ul>
       </section>
@@ -63,15 +63,15 @@ hide:
           <div class="stat-grid">
             <div class="stat-item">
               <strong>Core use case</strong>
-              <span>Calibrate predictions from an existing regression model without retraining the learner.</span>
+              <span>Start from an existing regression model and improve the scale used to report predictions and intervals.</span>
             </div>
             <div class="stat-item">
               <strong>Two entrypoints</strong>
-              <span>Choose between direct regression calibration and a conformity-score quantile workflow.</span>
+              <span>Choose between direct calibration of predicted responses and calibration of a predicted score threshold.</span>
             </div>
             <div class="stat-item">
               <strong>Outputs</strong>
-              <span>Return calibrated predictions, Venn-Abers style sets, intervals, and coverage diagnostics.</span>
+              <span>Return calibrated predictions, prediction intervals, and diagnostics for interval quality.</span>
             </div>
           </div>
         </div>
@@ -100,28 +100,30 @@ hide:
 
     <div class="overview-grid">
       <article class="landing-card">
-        <p class="mini-label">Regression calibration</p>
-        <h3>Calibrate point predictions after the model is trained</h3>
+        <p class="mini-label">Self-calibrating conformal</p>
+        <h3>Calibrate the predicted response, then build an interval around it</h3>
         <p>
-          Start here when you have a point predictor for <code>y</code> and want calibrated
-          predictions together with intervals induced by that calibrated scale.
+          This workflow starts with a point prediction for <code>y</code>. It learns a monotone
+          correction from predicted values to observed outcomes on a calibration set, then uses the
+          resulting calibrated scale to produce interval outputs.
         </p>
       </article>
       <article class="landing-card">
-        <p class="mini-label">Quantile-score calibration</p>
-        <h3>Calibrate a learned score threshold for conformal prediction</h3>
+        <p class="mini-label">Quantile workflow</p>
+        <h3>Predict how large the error can be, then calibrate that threshold</h3>
         <p>
-          Use this path when you can predict the <code>(1 - alpha)</code> quantile of a conformity
-          score and want intervals built from a calibrated threshold.
+          This workflow starts with a model for the <code>(1 - alpha)</code> quantile of a
+          conformity score. The package calibrates that threshold and then uses it to decide which
+          candidate outcomes belong inside the interval.
         </p>
       </article>
       <article class="landing-card">
-        <p class="mini-label">Extensibility</p>
-        <h3>Keep the learner fixed and swap the calibration pieces</h3>
+        <p class="mini-label">Conformity score</p>
+        <h3>Measure how compatible a candidate outcome is with the input</h3>
         <p>
-          Predictors can be callables or objects with <code>.predict(...)</code>, and both
-          workflows expose hooks for custom calibrators, conformity scores, and typed algorithm
-          configs.
+          A conformity score is a number that is small when a candidate outcome looks plausible and
+          large when it looks implausible. The default score is <code>|y - mu(x)|</code>, the
+          absolute distance between the candidate outcome and a center prediction.
         </p>
       </article>
     </div>
@@ -132,8 +134,7 @@ hide:
       <p class="landing-eyebrow">Workflows</p>
       <h2>Choose the workflow that matches your upstream model</h2>
       <p>
-        Click through the package entrypoints for the main use case, core inputs, and the shape of
-        the resulting intervals.
+        The panel below summarizes the main use case, inputs, and outputs for each workflow.
       </p>
     </div>
 
@@ -199,11 +200,11 @@ intervals = model.predict_interval(X_test)</code></pre>
   <section class="landing-section" id="why-calibration">
     <div class="section-heading">
       <p class="landing-eyebrow">Why Calibration</p>
-      <h2>Predict, calibrate, then form intervals</h2>
+      <h2>Predict, calibrate, then form the interval</h2>
       <p>
-        Useful predictive structure is not the same as reliable scale. This package learns a
-        one-dimensional correction on a calibration sample and uses that corrected scale to form
-        predictions or interval thresholds.
+        The package separates prediction from calibration. The model provides a raw prediction or a
+        raw threshold, calibration adjusts that scale on held-out data, and the interval is built
+        from the calibrated output rather than the raw one.
       </p>
     </div>
 
@@ -211,37 +212,38 @@ intervals = model.predict_interval(X_test)</code></pre>
       <article class="process-step">
         <p class="process-label">Step 1</p>
         <h3>Predict</h3>
-        <p>Start from a black-box model that outputs either a response prediction or a score quantile.</p>
+        <p>Fit or supply a model that outputs either a response prediction or a score threshold.</p>
       </article>
       <div class="process-connector" aria-hidden="true"></div>
       <article class="process-step process-step-accent">
         <p class="process-label">Step 2</p>
         <h3>Calibrate</h3>
-        <p>Apply Venn-Abers style isotonic calibration to put predictions or score thresholds on the right empirical scale.</p>
+        <p>Use a calibration set to learn a monotone correction so the reported scale better matches observed outcomes.</p>
       </article>
       <div class="process-connector" aria-hidden="true"></div>
       <article class="process-step process-step-warm">
         <p class="process-label">Step 3</p>
         <h3>Form intervals</h3>
-        <p>Return calibrated outputs and check coverage on held-out data.</p>
+        <p>Translate the calibrated prediction or calibrated threshold into an interval and then check coverage empirically.</p>
       </article>
     </div>
 
     <div class="overview-grid">
       <article class="landing-card">
         <p class="mini-label">Direct regression path</p>
-        <h3>Calibrate the response scale itself</h3>
+        <h3>How the self-calibrating path makes an interval</h3>
         <p>
-          This workflow calibrates point predictions directly and derives outputs from the corrected
-          response scale.
+          It first calibrates the point prediction itself. It then uses conformity scores computed
+          around that calibrated prediction to determine how far the interval should extend.
         </p>
       </article>
       <article class="landing-card">
         <p class="mini-label">Score-threshold path</p>
-        <h3>Calibrate the quantile of a conformity score</h3>
+        <h3>How the quantile path makes an interval</h3>
         <p>
-          This workflow calibrates a learned score threshold and solves the score level set to
-          obtain intervals.
+          It predicts a threshold for the conformity score, calibrates that threshold, and includes
+          every candidate outcome whose score stays below the calibrated cutoff. With the default
+          absolute-residual score, this becomes a symmetric interval around the center prediction.
         </p>
       </article>
     </div>
@@ -289,24 +291,36 @@ coverage, width = model.check_coverage(X_test, y_test)</code></pre>
   <section class="landing-section" id="resources">
     <div class="section-heading">
       <p class="landing-eyebrow">Resources</p>
-      <h2>Go deeper only when you need to</h2>
+      <h2>Documentation and papers</h2>
       <p>
-        Use these links for notebooks, repository context, and the secondary reference material
-        that remains in the docs.
+        Use these links for notebooks, API documentation, and the main methodological references
+        behind the two workflows.
       </p>
     </div>
 
     <div class="resource-grid">
       <article class="resource-card">
+        <p class="mini-label">Paper PDF</p>
+        <h3>Inductive Venn-Abers predictive distribution</h3>
+        <p>Primary reference for the regression-style Venn-Abers workflow.</p>
+        <a href="http://proceedings.mlr.press/v91/nouretdinov18a/nouretdinov18a.pdf">Open PDF</a>
+      </article>
+      <article class="resource-card">
+        <p class="mini-label">Paper PDF</p>
+        <h3>Conformalized quantile regression</h3>
+        <p>Primary reference for the quantile-based interval construction.</p>
+        <a href="https://papers.nips.cc/paper_files/paper/2019/file/5103c3584b063c431bd12689b5e76fb-Conference.pdf">Open PDF</a>
+      </article>
+      <article class="resource-card">
         <p class="mini-label">Notebook</p>
         <h3>Regression quickstart</h3>
-        <p>Start with the direct regression workflow.</p>
+        <p>Example of the direct regression workflow.</p>
         <a href="https://github.com/Larsvanderlaan/SelfCalibratingConformal/blob/master/quickstart_regression.ipynb">Open notebook</a>
       </article>
       <article class="resource-card">
         <p class="mini-label">Notebook</p>
         <h3>Quantile conformal quickstart</h3>
-        <p>See the score-quantile conformal workflow.</p>
+        <p>Example of the score-threshold workflow.</p>
         <a href="https://github.com/Larsvanderlaan/SelfCalibratingConformal/blob/master/quickstart_quantile_cp.ipynb">Open notebook</a>
       </article>
       <article class="resource-card">
@@ -324,7 +338,7 @@ coverage, width = model.check_coverage(X_test, y_test)</code></pre>
       <article class="resource-card">
         <p class="mini-label">Docs</p>
         <h3>Guides</h3>
-        <p>Review the short workflow guide.</p>
+        <p>Short descriptions of the regression and quantile workflows.</p>
         <a href="./guides/">Open guides</a>
       </article>
       <article class="resource-card">
@@ -341,7 +355,8 @@ coverage, width = model.check_coverage(X_test, y_test)</code></pre>
       <p class="landing-eyebrow">References</p>
       <h2>Core background</h2>
       <p>
-        These references cover the main ingredients behind the package.
+        The package draws on Venn-Abers predictive distributions for calibrated regression outputs
+        and on conformalized quantile regression for score-threshold-based intervals.
       </p>
     </div>
 

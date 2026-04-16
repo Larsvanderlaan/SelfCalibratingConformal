@@ -10,36 +10,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const workflows = {
     regression: {
-      badge: "Default starting point",
+      badge: "Point-prediction path",
       title: "<code>SelfCalibratingConformalPredictor</code>",
       summary:
-        "Start here when you have a point predictor for <code>y</code> and want calibrated predictions together with intervals induced by that calibrated scale.",
+        "Use this when you already have a point predictor for <code>y</code>. The package calibrates the predicted response and then builds interval outputs from that calibrated scale.",
       visualNote:
-        "Best for the shortest path from a fitted regression model to calibrated predictions, Venn-Abers style multi-predictions, and interval outputs.",
+        "This is the direct route: start from a fitted predictor, correct its scale on a calibration set, and then compute interval summaries from the corrected output.",
       inputTitle: "Core inputs",
       inputCopy:
         "A predictor for <code>y</code>, a calibration split, and the target miscoverage level <code>alpha</code>.",
-      outputTitle: "What you get",
+      outputTitle: "Outputs",
       outputCopy:
-        "Calibrated point predictions, Venn-Abers style prediction sets, intervals, and empirical coverage summaries.",
+        "Calibrated point predictions, interval outputs, and empirical coverage summaries.",
       code:
         "from selfcalibratingconformal import SelfCalibratingConformalPredictor\n\nmodel = SelfCalibratingConformalPredictor(predictor)\nmodel.fit(X_cal, y_cal, alpha=0.1)\nintervals = model.predict_interval(X_test)",
       schematic:
         '<div class="workflow-chip">predictor</div><div class="workflow-arrow" aria-hidden="true"></div><div class="workflow-chip workflow-chip-accent">calibration map</div><div class="workflow-arrow" aria-hidden="true"></div><div class="workflow-chip workflow-chip-warm">intervals</div>',
     },
     quantile: {
-      badge: "Conformal threshold path",
+      badge: "Score-threshold path",
       title: "<code>VennAbersQuantileConformalPredictor</code>",
       summary:
-        "Use this path when your workflow estimates the <code>(1 - alpha)</code> quantile of a conformity score and you want calibrated thresholds that translate into prediction intervals.",
+        "Use this when your workflow predicts the <code>(1 - alpha)</code> quantile of a conformity score. The package calibrates that threshold and turns it into a prediction interval.",
       visualNote:
-        "Best when your upstream model already produces score thresholds instead of direct outcome predictions.",
+        "This route is useful when the model is built around score thresholds rather than direct predictions for the response.",
       inputTitle: "Core inputs",
       inputCopy:
         "A score-quantile predictor, an optional center predictor, a calibration split, and the target level <code>alpha</code>.",
-      outputTitle: "What you get",
+      outputTitle: "Outputs",
       outputCopy:
-        "Calibrated score thresholds, conformal intervals, and both coverage and threshold-calibration diagnostics.",
+        "Calibrated score thresholds, conformal intervals, and threshold-calibration diagnostics.",
       code:
         "from selfcalibratingconformal import VennAbersQuantileConformalPredictor\n\ncp = VennAbersQuantileConformalPredictor(\n    score_quantile_predictor=score_model,\n    center_predictor=center_model,\n    alpha=0.1,\n)\ncp.fit(X_cal, y_cal)",
       schematic:
